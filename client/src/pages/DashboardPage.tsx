@@ -14,9 +14,15 @@ import HarvestCountdownCard from "@/components/HarvestCountdownCard";
 import AnalyticsChartCard from "@/components/AnalyticsChartCard";
 import { Leaf } from "lucide-react";
 
-type Tab = 'overview' | 'analytics' | 'management' | 'maps';
+type Tab = 'overview' | 'analytics' | 'management';
 
-export default function DashboardPage({ onLogout }: { onLogout: () => void }) {
+interface DashboardPageProps {
+  user: any;
+  onLogout: () => void;
+  onUserUpdate: (user: any) => void;
+}
+
+export default function DashboardPage({ user, onLogout, onUserUpdate }: DashboardPageProps) {
   const [activeTab, setActiveTab] = useState<Tab>('overview');
 
   // TODO: Remove mock data - this is just for the prototype
@@ -39,12 +45,14 @@ export default function DashboardPage({ onLogout }: { onLogout: () => void }) {
   return (
     <div className="flex h-screen bg-background">
       <FarmerProfileSidebar
-        farmerName="Farmer 1"
-        farmName="Green Valley Farm"
-        farmLocation="XXX XXX XXX"
-        totalArea="4 Hectare (10 acres)"
-        contact="+91 1234567890"
+        farmerName={user.name || "Farmer"}
+        farmName={user.farmName || "Not Set"}
+        farmLocation={user.farmLocation || "Not Set"}
+        totalArea={user.totalArea || "Not Set"}
+        contact={user.contact || "Not Set"}
         onEditProfile={() => console.log('Edit profile clicked')}
+        user={user}
+        onUserUpdate={onUserUpdate}
       />
 
       <div className="flex-1 flex flex-col overflow-hidden">
@@ -100,17 +108,6 @@ export default function DashboardPage({ onLogout }: { onLogout: () => void }) {
               data-testid="tab-management"
             >
               Management
-            </button>
-            <button
-              onClick={() => setActiveTab('maps')}
-              className={`py-3 px-1 border-b-2 transition-colors ${
-                activeTab === 'maps'
-                  ? 'border-primary text-foreground font-medium'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'
-              }`}
-              data-testid="tab-maps"
-            >
-              Maps
             </button>
           </div>
         </div>
@@ -262,15 +259,6 @@ export default function DashboardPage({ onLogout }: { onLogout: () => void }) {
                   { crop: 'Onions', date: '10 Oct 2025', progress: 30, stage: 'Growth' }
                 ]}
               />
-            </div>
-          )}
-
-          {activeTab === 'maps' && (
-            <div className="flex items-center justify-center h-full">
-              <div className="text-center">
-                <h2 className="text-2xl font-bold mb-2">Maps View</h2>
-                <p className="text-muted-foreground">Map functionality coming soon</p>
-              </div>
             </div>
           )}
         </main>

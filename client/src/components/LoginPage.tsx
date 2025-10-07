@@ -6,25 +6,66 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { Leaf, Mail, Lock, User, MapPin, Phone } from "lucide-react";
 
-export default function LoginPage({ onLogin }: { onLogin: () => void }) {
+import { apiRequest } from "@/lib/queryClient";
+
+interface LoginPageProps {
+  onLogin: (user: any, sessionId: string) => void;
+}
+
+export default function LoginPage({ onLogin }: LoginPageProps) {
   const [loginEmail, setLoginEmail] = useState("");
   const [loginPassword, setLoginPassword] = useState("");
   const [registerEmail, setRegisterEmail] = useState("");
   const [registerPassword, setRegisterPassword] = useState("");
+  const [name, setName] = useState("");
   const [farmName, setFarmName] = useState("");
   const [farmLocation, setFarmLocation] = useState("");
   const [contact, setContact] = useState("");
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
 
-  const handleLogin = (e: React.FormEvent) => {
+  const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Login attempted:", { loginEmail, loginPassword });
-    onLogin();
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await apiRequest("POST", "/api/login", {
+        email: loginEmail,
+        password: loginPassword,
+      });
+
+      const data = await response.json();
+      onLogin(data.user, data.sessionId);
+    } catch (err: any) {
+      setError(err.message || "Login failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleRegister = (e: React.FormEvent) => {
+  const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    console.log("Register attempted:", { registerEmail, registerPassword, farmName, farmLocation, contact });
-    onLogin();
+    setError("");
+    setLoading(true);
+
+    try {
+      const response = await apiRequest("POST", "/api/register", {
+        email: registerEmail,
+        password: registerPassword,
+        name,
+        farmName,
+        farmLocation,
+        contact,
+      });
+
+      const data = await response.json();
+      onLogin(data.user, data.sessionId);
+    } catch (err: any) {
+      setError(err.message || "Registration failed");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
@@ -50,6 +91,12 @@ export default function LoginPage({ onLogin }: { onLogin: () => void }) {
             <TabsContent value="login">
               <form onSubmit={handleLogin}>
                 <div className="space-y-4">
+                  {error && (
+                    <div className="p-3 rounded-md bg-destructive/10 text-destructive text-sm" data-testid="text-error">
+                      {error}
+                    </div>
+                  )}
+
                   <div>
                     <Label htmlFor="email" className="text-foreground">Email Address</Label>
                     <div className="relative mt-1">
@@ -61,6 +108,7 @@ export default function LoginPage({ onLogin }: { onLogin: () => void }) {
                         value={loginEmail}
                         onChange={(e) => setLoginEmail(e.target.value)}
                         className="pl-10"
+                        required
                         data-testid="input-login-email"
                       />
                     </div>
@@ -77,6 +125,7 @@ export default function LoginPage({ onLogin }: { onLogin: () => void }) {
                         value={loginPassword}
                         onChange={(e) => setLoginPassword(e.target.value)}
                         className="pl-10"
+                        required
                         data-testid="input-login-password"
                       />
                     </div>
@@ -90,40 +139,9 @@ export default function LoginPage({ onLogin }: { onLogin: () => void }) {
                     <a href="#" className="text-sm text-primary hover:underline">Forgot password?</a>
                   </div>
 
-                  <Button type="submit" className="w-full" data-testid="button-login">
-                    Sign in
+                  <Button type="submit" className="w-full" disabled={loading} data-testid="button-login">
+                    {loading ? "Signing in..." : "Sign in"}
                   </Button>
-
-                  <div className="relative my-6">
-                    <div className="absolute inset-0 flex items-center">
-                      <div className="w-full border-t border-border"></div>
-                    </div>
-                    <div className="relative flex justify-center text-sm">
-                      <span className="px-2 bg-card text-muted-foreground">Or continue with</span>
-                    </div>
-                  </div>
-
-                  <div className="grid grid-cols-2 gap-4">
-                    <Button type="button" variant="outline" className="w-full" data-testid="button-google">
-                      <svg className="w-4 h-4 mr-2" viewBox="0 0 24 24">
-                        <path fill="#EA4335" d="M5.26620003,9.76452941 C6.19878754,6.93863203 8.85444915,4.90909091 12,4.90909091 C13.6909091,4.90909091 15.2181818,5.50909091 16.4181818,6.49090909 L19.9090909,3 C17.7818182,1.14545455 15.0545455,0 12,0 C7.27006974,0 3.1977497,2.69829785 1.23999023,6.65002441 L5.26620003,9.76452941 Z"/>
-                        <path fill="#34A853" d="M16.0407269,18.0125889 C14.9509167,18.7163016 13.5660892,19.0909091 12,19.0909091 C8.86648613,19.0909091 6.21911939,17.076871 5.27698177,14.2678769 L1.23746264,17.3349879 C3.19279051,21.2936293 7.26500293,24 12,24 C14.9328362,24 17.7353462,22.9573905 19.834192,20.9995801 L16.0407269,18.0125889 Z"/>
-                        <path fill="#4A90E2" d="M19.834192,20.9995801 C22.0291676,18.9520994 23.4545455,15.903663 23.4545455,12 C23.4545455,11.2909091 23.3454545,10.5818182 23.1818182,9.90909091 L12,9.90909091 L12,14.4545455 L18.4363636,14.4545455 C18.1187732,16.013626 17.2662994,17.2212117 16.0407269,18.0125889 L19.834192,20.9995801 Z"/>
-                        <path fill="#FBBC05" d="M5.27698177,14.2678769 C5.03832634,13.556323 4.90909091,12.7937589 4.90909091,12 C4.90909091,11.2182781 5.03443647,10.4668121 5.26620003,9.76452941 L1.23999023,6.65002441 C0.43658717,8.26043162 0,10.0753848 0,12 C0,13.9195484 0.444780743,15.7301709 1.23746264,17.3349879 L5.27698177,14.2678769 Z"/>
-                      </svg>
-                      Google
-                    </Button>
-                    <Button type="button" variant="outline" className="w-full" data-testid="button-microsoft">
-                      <svg className="w-4 h-4 mr-2" viewBox="0 0 23 23">
-                        <path fill="#f3f3f3" d="M0 0h23v23H0z"/>
-                        <path fill="#f35325" d="M1 1h10v10H1z"/>
-                        <path fill="#81bc06" d="M12 1h10v10H12z"/>
-                        <path fill="#05a6f0" d="M1 12h10v10H1z"/>
-                        <path fill="#ffba08" d="M12 12h10v10H12z"/>
-                      </svg>
-                      Microsoft
-                    </Button>
-                  </div>
                 </div>
               </form>
             </TabsContent>
@@ -131,6 +149,12 @@ export default function LoginPage({ onLogin }: { onLogin: () => void }) {
             <TabsContent value="register">
               <form onSubmit={handleRegister}>
                 <div className="space-y-4">
+                  {error && (
+                    <div className="p-3 rounded-md bg-destructive/10 text-destructive text-sm" data-testid="text-error">
+                      {error}
+                    </div>
+                  )}
+
                   <div>
                     <Label htmlFor="register-email" className="text-foreground">Email Address</Label>
                     <div className="relative mt-1">
@@ -142,6 +166,7 @@ export default function LoginPage({ onLogin }: { onLogin: () => void }) {
                         value={registerEmail}
                         onChange={(e) => setRegisterEmail(e.target.value)}
                         className="pl-10"
+                        required
                         data-testid="input-register-email"
                       />
                     </div>
@@ -158,7 +183,24 @@ export default function LoginPage({ onLogin }: { onLogin: () => void }) {
                         value={registerPassword}
                         onChange={(e) => setRegisterPassword(e.target.value)}
                         className="pl-10"
+                        required
                         data-testid="input-register-password"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <Label htmlFor="name" className="text-foreground">Full Name</Label>
+                    <div className="relative mt-1">
+                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Input
+                        id="name"
+                        type="text"
+                        placeholder="John Doe"
+                        value={name}
+                        onChange={(e) => setName(e.target.value)}
+                        className="pl-10"
+                        data-testid="input-name"
                       />
                     </div>
                   </div>
@@ -166,7 +208,7 @@ export default function LoginPage({ onLogin }: { onLogin: () => void }) {
                   <div>
                     <Label htmlFor="farm-name" className="text-foreground">Farm Name</Label>
                     <div className="relative mt-1">
-                      <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
+                      <Leaf className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
                       <Input
                         id="farm-name"
                         type="text"
@@ -211,8 +253,8 @@ export default function LoginPage({ onLogin }: { onLogin: () => void }) {
                     </div>
                   </div>
 
-                  <Button type="submit" className="w-full" data-testid="button-register">
-                    Create Account
+                  <Button type="submit" className="w-full" disabled={loading} data-testid="button-register">
+                    {loading ? "Creating Account..." : "Create Account"}
                   </Button>
                 </div>
               </form>
