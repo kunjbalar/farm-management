@@ -1,0 +1,143 @@
+**Project Title:** "Farm Management" - A Full-Stack MERN Dashboard
+
+**High-Level Objective:**
+Create a complete MERN stack (MongoDB, Express.js, React, Node.js) web application called "Farm Management." This application will serve as a dashboard for farmers to manage their operations. The entire user interface, functionality, layout, and color scheme should be built by referencing the 4 website images provided.
+
+**Visual Reference:**
+Please use the 4 provided images as the primary visual guide for this project.
+1.  **Login Page Image:** Use this for the design of the login and registration pages.
+2.  **Overview Dashboard Image:** Use this for the layout and components of the main dashboard landing page. This includes the Weather, Soil Health, Crop Status, Machinery, Alerts, and Inventory widgets.
+3.  **Management Dashboard Image:** Use this to build the "Management" tab, including the Crop Management, Equipment Maintenance, Irrigation Schedule, and Harvest Countdown cards.
+4.  **Analytics Dashboard Image:** Use this to create the layout for the "Analytics" tab, with its various chart placeholders.
+
+**Technology Stack:**
+* **Backend:** Node.js, Express.js
+* **Database:** MongoDB with Mongoose ODM
+* **Frontend:** React (using Vite or Create React App)
+* **Authentication:** JSON Web Tokens (JWT)
+* **Styling:** Tailwind CSS for a modern, utility-first approach to match the images.
+* **API Client:** Axios for frontend HTTP requests.
+* **Routing:** React Router DOM for frontend navigation.
+* **Charts:** Recharts for data visualization on the analytics page.
+
+---
+
+## **Part 1: Backend (Server-Side) Development**
+
+Please set up a Node.js/Express server with the following database models and API endpoints.
+
+### **1. Database Schema (Mongoose Models)**
+
+Create the following Mongoose schemas:
+
+* **`User` model:**
+    * `email`: { type: String, required: true, unique: true }
+    * `password`: { type: String, required: true }
+    * `farmName`: { type: String, default: 'My Farm' }
+    * `farmLocation`: { type: String }
+    * `totalArea`: { type: Number } // in acres
+    * `contact`: { type: String }
+
+* **`Crop` model:**
+    * `user`: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    * `name`: { type: String, required: true } // e.g., 'Wheat', 'Potatoes'
+    * `area`: { type: Number } // acres
+    * `stage`: { type: String } // e.g., 'Planting', 'Seedling', 'Growth', 'Flowering'
+    * `health`: { type: String } // e.g., 'Excellent', 'Good', 'Fair', 'Poor'
+    * `harvestDate`: { type: Date }
+
+* **`Equipment` model:**
+    * `user`: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    * `name`: { type: String, required: true } // e.g., 'Massey Ferguson 7726'
+    * `status`: { type: String, default: 'Active' } // 'Active', 'Maintenance', 'Inactive'
+    * `fuelLevel`: { type: Number } // Percentage
+    * `nextMaintenance`: { type: Date }
+
+* **`InventoryItem` model:**
+    * `user`: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    * `name`: { type: String, required: true } // e.g., 'Wheat Seeds', 'Urea Fertilizer'
+    * `quantity`: { type: String } // e.g., '500 kg', '20 ltr'
+    * `status`: { type: String } // 'In Stock', 'Low Stock', 'Out of Stock'
+
+* **`IrrigationSchedule` model:**
+    * `user`: { type: mongoose.Schema.Types.ObjectId, ref: 'User' }
+    * `field`: { type: String, required: true } // e.g., 'Corn Field (North)'
+    * `startTime`: { type: Date, required: true }
+    * `duration`: { type: Number, required: true } // in minutes
+    * `waterUsage`: { type: Number } // in gallons
+
+### **2. API Endpoints (RESTful Routes)**
+
+Create a well-structured set of API routes. All protected routes should be authenticated using JWT.
+
+* **Auth Routes:**
+    * `POST /api/auth/register`: Create a new user.
+    * `POST /api/auth/login`: Log a user in and return a JWT.
+
+* **User/Profile Routes:**
+    * `GET /api/profile`: Get the logged-in user's profile data.
+    * `PUT /api/profile`: Update the logged-in user's profile data.
+
+* **Dashboard Data Routes (Protected):**
+    * `GET /api/dashboard/overview`: Fetch aggregated data for the main overview dashboard.
+    * `GET /api/crops`: Get all crops for the logged-in user.
+    * `POST /api/crops`: Add a new crop.
+    * `GET /api/equipment`: Get all equipment for the logged-in user.
+    * `GET /api/irrigation`: Get all irrigation schedules.
+    * `POST /api/irrigation`: Create a new irrigation schedule.
+    * `GET /api/inventory`: Get all inventory items.
+
+---
+
+## **Part 2: Frontend (Client-Side) Development**
+
+Create the React frontend application, styling everything with **Tailwind CSS** to precisely match the visual design in the provided images.
+
+### **1. Pages and Routing (React Router)**
+
+* `/login`: The login page.
+* `/register`: The registration page.
+* `/dashboard`: A protected parent route that contains the main layout (sidebar + content).
+    * `/dashboard/overview`: The default view, showing the **Overview** page.
+    * `/dashboard/management`: Shows the **Management** page.
+    * `/dashboard/analytics`: Shows the **Analytics** page.
+    * `/dashboard/maps`: A placeholder for the Maps page.
+
+### **2. Component Breakdown**
+
+* **`LoginPage.js`:**
+    * Build according to the login page image.
+    * On successful login, store JWT and redirect to `/dashboard/overview`.
+
+* **`DashboardLayout.js`:**
+    * Create the persistent layout shown in the dashboard images.
+    * **`FarmerProfileSidebar.js`**: The left sidebar component.
+    * **`Header.js`**: The top header with welcome message and logout.
+    * **`Tabs.js`**: The navigation tabs for Overview, Analytics, Management, Maps.
+
+* **`OverviewDashboard.js` (Reference the Overview image):**
+    * `WeatherWidget.js`: Component for the weather card.
+    * `SoilHealthWidget.js`: Component for the soil health card.
+    * `CropStatusWidget.js`: Component for the crop status card.
+    * `MachineryWidget.js`: Component for the machinery card.
+    * `AlertsWidget.js`: Component for the alerts card.
+    * `InventoryWidget.js`: Component for the inventory card.
+
+* **`ManagementDashboard.js` (Reference the Management image):**
+    * `CropManagementCard.js`: Component showing crops and health.
+    * `EquipmentMaintenanceCard.js`: Component for equipment maintenance status.
+    * `IrrigationScheduleCard.js`: Component for irrigation schedule. Must include a "Schedule New Irrigation" button and form.
+    * `HarvestCountdownCard.js`: Component for the harvest countdown progress bars.
+
+* **`AnalyticsDashboard.js` (Reference the Analytics image):**
+    * Create the 6 placeholder cards as shown.
+    * Inside each card, use the **Recharts** library to render a simple, static chart (e.g., a LineChart or BarChart) as a placeholder.
+
+---
+
+## **Part 3: Final Instructions**
+
+1.  **Seed Data:** Please create a simple script or manually add sample data to the MongoDB database for one user so the dashboard is populated on first load.
+2.  **Environment Variables:** Use a `.env` file for the MongoDB connection string and JWT secret.
+3.  **Code Structure:** Organize the code logically (e.g., `models`, `routes`, `controllers` for server; `components`, `pages`, `hooks` for client).
+4.  **Generation:** Please generate the complete code, file by file, starting with the backend, then the React components, and finally the main App component.
