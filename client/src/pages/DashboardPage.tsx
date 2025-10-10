@@ -154,6 +154,8 @@ export default function DashboardPage({ user, onLogout, onUserUpdate }: Dashboar
                   { name: 'Drip Irrigation System', status: 'Active', fuelLevel: 100, lastMaintenance: 'Maint: 15 days ago' },
                   { name: 'Automated Seeder', status: 'Inactive', fuelLevel: 0, lastMaintenance: 'Maint: 3 Months ago' }
                 ]}
+                onTrack={() => console.log('Track equipment clicked')}
+                onMaintenance={() => console.log('Maintenance clicked')}
               />
               <AlertsWidget
                 alerts={[

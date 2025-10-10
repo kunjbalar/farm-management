@@ -11,6 +11,8 @@ interface Equipment {
 
 interface MachineryWidgetProps {
   equipment: Equipment[];
+  onTrack: () => void;
+  onMaintenance: () => void;
 }
 
 const statusColors = {
@@ -19,7 +21,7 @@ const statusColors = {
   'Inactive': 'bg-secondary text-secondary-foreground'
 };
 
-export default function MachineryWidget({ equipment }: MachineryWidgetProps) {
+export default function MachineryWidget({ equipment, onTrack, onMaintenance }: MachineryWidgetProps) {
   return (
     <Card>
       <CardHeader>
@@ -47,10 +49,22 @@ export default function MachineryWidget({ equipment }: MachineryWidgetProps) {
         </div>
 
         <div className="flex gap-2 mt-4">
-          <Button variant="default" size="sm" className="flex-1" data-testid="button-track">
+          <Button 
+            variant="default" 
+            size="sm" 
+            className="flex-1"
+            onClick={onTrack}
+            data-testid="button-track"
+          >
             Track
           </Button>
-          <Button variant="secondary" size="sm" className="flex-1" data-testid="button-maintenance">
+          <Button 
+            variant="secondary" 
+            size="sm" 
+            className="flex-1"
+            onClick={onMaintenance}
+            data-testid="button-maintenance"
+          >
             Maintenance
           </Button>
         </div>
