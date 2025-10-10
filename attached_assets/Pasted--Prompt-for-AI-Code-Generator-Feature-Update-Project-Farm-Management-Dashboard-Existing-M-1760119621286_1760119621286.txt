@@ -1,0 +1,99 @@
+### Prompt for AI Code Generator: Feature Update
+
+**Project:** Farm Management Dashboard (Existing MERN Stack Application)
+
+**High-Level Objective:**
+You have already built a MERN stack application. Now, we will add a new feature: an order management system. This system will use a **MySQL database** to store and retrieve order information. The existing MongoDB database will remain for users and other farm data. You will integrate MySQL into the Node.js backend and update the React frontend to allow users to place and view orders.
+
+**Reference Image:**
+Please refer to the previously provided dashboard screenshot (`Screenshot (221).png`). We will be adding functionality to the **"Order"** and **"Inventory"** buttons located in the "Inventory" widget on the right side of the dashboard.
+
+---
+
+## Part 1: Backend Development (Node.js, Express & MySQL)
+
+### Task 1: Integrate MySQL
+1.  **Install MySQL Driver:** Add the `mysql2` package to your project's dependencies (`npm install mysql2`).
+2.  **Create MySQL Connection:** Create a new configuration file (e.g., `config/mysql.js`) to handle the connection to your MySQL database.
+3.  **Update Environment Variables:** Add your MySQL connection details (HOST, USER, PASSWORD, DATABASE) to the `.env` file.
+
+### Task 2: Create the MySQL `orders` Table
+Provide the following SQL schema for a new table named `orders`. This will store all the order information.
+
+```sql
+CREATE TABLE orders (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    order_id VARCHAR(255) NOT NULL UNIQUE,
+    order_details TEXT NOT NULL,
+    order_date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+    user_mongo_id VARCHAR(255) NOT NULL
+);
+order_id: A unique ID that will be automatically generated (e.g., using a library like uuid or a custom function) when an order is created.
+
+order_details: The simple string/text that the user enters for their order.
+
+user_mongo_id: This field will store the user's _id from the MongoDB users collection to link the order to a specific user.
+
+Task 3: Create New API Endpoints for Orders
+Create a new route file (e.g., routes/orders.js) for handling the following actions. These routes must be protected by your existing JWT authentication middleware.
+
+POST /api/orders/create
+
+This endpoint will create a new order.
+
+It should accept orderDetails in the request body.
+
+Logic:
+
+Get the user's MongoDB _id from the decoded JWT token.
+
+Generate a unique order_id (e.g., ORD- followed by a timestamp or random characters).
+
+Insert a new row into the MySQL orders table with the new order_id, the user's orderDetails, and their user_mongo_id.
+
+Return a success message.
+
+GET /api/orders
+
+This endpoint will fetch all orders for the currently logged-in user.
+
+Logic:
+
+Get the user's MongoDB _id from the decoded JWT token.
+
+Query the MySQL orders table to find all records where user_mongo_id matches the user's ID.
+
+Return the list of orders as a JSON array.
+
+Part 2: Frontend Development (React)
+Task 1: Add Functionality to the "Order" Button
+Create an Order Modal: When the user clicks the "Order" button inside the InventoryWidget.js component, it should open a modal.
+
+Modal Content: The modal should contain:
+
+A title, such as "Place a New Supply Order".
+
+A textarea or input field for the user to type their order (e.g., "50 bags of Urea Fertilizer, 100kg of Wheat Seeds").
+
+A "Submit Order" button.
+
+API Call: When the "Submit Order" button is clicked, make a POST request using Axios to the /api/orders/create endpoint, sending the order details in the request body.
+
+Feedback: Upon successful submission, close the modal and show a success notification (e.g., "Order placed successfully!").
+
+Task 2: Add Functionality to the "Inventory" Button (Order History)
+For this feature, the "Inventory" button will now be used to view the history of orders placed.
+
+Create an Order History View: When the user clicks the "Inventory" button, it should navigate to a new page (e.g., /dashboard/order-history) or open a larger modal that displays the user's order history.
+
+API Call: On this new page/modal, make a GET request using Axios to the /api/orders endpoint to fetch all of the user's past orders.
+
+Display Orders: Render the fetched orders in a clean list or table format. Each entry should display:
+
+Order ID (e.g., ORD-16654321)
+
+Order Details
+
+Date Placed
+
+Add a new route in your React Router setup for /dashboard/order-history if you choose to make it a new page.
