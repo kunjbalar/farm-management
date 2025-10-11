@@ -25,11 +25,7 @@ export default function PlaceOrderModal({ open, onOpenChange }: PlaceOrderModalP
 
   const createOrderMutation = useMutation({
     mutationFn: async (orderDetails: string) => {
-      return await apiRequest("/api/orders", {
-        method: "POST",
-        body: JSON.stringify({ orderDetails }),
-        headers: { "Content-Type": "application/json" },
-      });
+      return await apiRequest("POST", "/api/orders", { orderDetails });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
