@@ -116,18 +116,29 @@ export async function registerRoutes(app: Express): Promise<Server> {
   // Create a new order
   app.post("/api/orders", async (req, res) => {
     const sessionId = req.headers.authorization?.replace("Bearer ", "");
+    console.log("[ORDER] Request received. SessionId:", sessionId ? "present" : "missing");
+    
     if (!sessionId) {
+      console.log("[ORDER] Error: No sessionId in Authorization header");
       return res.status(401).json({ error: "Not authenticated" });
     }
 
     const userId = sessions.get(sessionId);
+    console.log("[ORDER] UserId from session:", userId || "not found");
+    
     if (!userId) {
+      console.log("[ORDER] Error: Invalid or expired session");
       return res.status(401).json({ error: "Invalid session" });
     }
 
     try {
+      console.log("[ORDER] Request body:", JSON.stringify(req.body, null, 2));
+      
       const validatedOrderData = insertOrderSchema.parse(req.body);
+      console.log("[ORDER] Creating order with userId:", userId);
+      
       const order = await storage.createOrder(validatedOrderData.orderDetails, userId);
+      console.log("[ORDER] Order created successfully:", order.orderId);
       
       // Also add to inventory if we have structured data
       if (req.body.name && req.body.status) {
@@ -136,12 +147,17 @@ export async function registerRoutes(app: Express): Promise<Server> {
           quantity: req.body.quantity || "",
           status: req.body.status,
         };
+        console.log("[ORDER] Adding to inventory:", inventoryData);
+        
         const validatedInventoryData = insertInventorySchema.parse(inventoryData);
         await storage.createInventoryItem(validatedInventoryData, userId);
+        console.log("[ORDER] Inventory item added successfully");
       }
       
+      console.log("[ORDER] Request completed successfully");
       res.json(order);
     } catch (error) {
+      console.error("[ORDER] Error creating order:", error);
       res.status(400).json({ error: "Invalid order data" });
     }
   });
