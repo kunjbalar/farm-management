@@ -1,5 +1,7 @@
-import { type User, type InsertUser, type Order, type InsertOrder } from "@shared/schema";
-import { randomUUID } from "crypto";
+import { type User, type InsertUser, type Order } from "@shared/schema";
+import { users, orders } from "@shared/schema";
+import { db } from "./db";
+import { eq, desc } from "drizzle-orm";
 
 export interface IStorage {
   getUser(id: string): Promise<User | undefined>;
@@ -10,71 +12,54 @@ export interface IStorage {
   getUserOrders(userId: string): Promise<Order[]>;
 }
 
-export class MemStorage implements IStorage {
-  private users: Map<string, User>;
-  private orders: Map<number, Order>;
-  private orderCounter: number;
-
-  constructor() {
-    this.users = new Map();
-    this.orders = new Map();
-    this.orderCounter = 1;
-  }
-
+export class DatabaseStorage implements IStorage {
   async getUser(id: string): Promise<User | undefined> {
-    return this.users.get(id);
+    const [user] = await db.select().from(users).where(eq(users.id, id));
+    return user || undefined;
   }
 
   async getUserByEmail(email: string): Promise<User | undefined> {
-    return Array.from(this.users.values()).find(
-      (user) => user.email === email,
-    );
+    const [user] = await db.select().from(users).where(eq(users.email, email));
+    return user || undefined;
   }
 
   async createUser(insertUser: InsertUser): Promise<User> {
-    const id = randomUUID();
-    const user: User = {
-      id,
-      email: insertUser.email,
-      password: insertUser.password,
-      name: insertUser.name ?? null,
-      farmName: insertUser.farmName ?? null,
-      farmLocation: insertUser.farmLocation ?? null,
-      contact: insertUser.contact ?? null,
-      totalArea: insertUser.totalArea ?? null,
-    };
-    this.users.set(id, user);
+    const [user] = await db
+      .insert(users)
+      .values(insertUser)
+      .returning();
     return user;
   }
 
   async updateUser(id: string, updates: Partial<InsertUser>): Promise<User | undefined> {
-    const user = this.users.get(id);
-    if (!user) return undefined;
-    
-    const updatedUser = { ...user, ...updates };
-    this.users.set(id, updatedUser);
-    return updatedUser;
+    const [user] = await db
+      .update(users)
+      .set(updates)
+      .where(eq(users.id, id))
+      .returning();
+    return user || undefined;
   }
 
   async createOrder(orderDetails: string, userId: string): Promise<Order> {
-    const id = this.orderCounter++;
-    const orderId = `ORD-${Date.now()}-${id}`;
-    const order: Order = {
-      id,
-      orderId,
-      orderDetails,
-      orderDate: new Date(),
-      userId,
-    };
-    this.orders.set(id, order);
+    const orderId = `ORD-${Date.now()}-${Math.floor(Math.random() * 10000)}`;
+    const [order] = await db
+      .insert(orders)
+      .values({
+        orderId,
+        orderDetails,
+        userId,
+      })
+      .returning();
     return order;
   }
 
   async getUserOrders(userId: string): Promise<Order[]> {
-    return Array.from(this.orders.values())
-      .filter((order) => order.userId === userId)
-      .sort((a, b) => b.orderDate.getTime() - a.orderDate.getTime());
+    return await db
+      .select()
+      .from(orders)
+      .where(eq(orders.userId, userId))
+      .orderBy(desc(orders.orderDate));
   }
 }
 
-export const storage = new MemStorage();
+export const storage = new DatabaseStorage();

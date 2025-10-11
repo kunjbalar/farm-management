@@ -1,0 +1,82 @@
+The `InventoryWidget.tsx` component currently has placeholder functions for `onOrder` and `onManageInventory`. The goal is to implement the real logic for these buttons in the parent dashboard component. This involves creating a modal for placing new orders, sending that data to the backend API to be stored in PostgreSQL, and creating a navigation link to view the order history.
+
+**Problem File:** `client/src/components/InventoryWidget.tsx`
+**Identified Issue:** The props `onOrder: () => void;` and `onManageInventory: () => void;` need to be connected to real functionality.
+
+---
+
+### Part 1: Frontend Changes (React)
+
+Please modify the parent component that uses `<InventoryWidget />` (likely located in a file like `client/src/pages/Dashboard.tsx` or a similar overview page).
+
+**1. Implement State for the Order Modal:**
+   - In the parent component, use the `useState` hook to manage the visibility of the "Place Order" modal.
+     ```javascript
+     const [isOrderModalOpen, setOrderModalOpen] = useState(false);
+     ```
+
+**2. Create the Handler Functions:**
+   - Create the two functions that will be passed as props to the `InventoryWidget`.
+   - Use the `useNavigate` hook from `react-router-dom` for navigation.
+
+   ```javascript
+   import { useNavigate } from 'react-router-dom';
+   import { useState } from 'react';
+
+   // Inside your component function...
+   const navigate = useNavigate();
+
+   // This function opens the modal
+   const handleOrderClick = () => {
+     setOrderModalOpen(true);
+   };
+
+   // This function navigates to the order history page
+   const handleInventoryClick = () => {
+     navigate('/dashboard/order-history'); 
+   };
+3. Create the "Place Order" Modal Component:
+
+Create a new component for the modal (e.g., OrderModal.tsx).
+
+This component should contain a form with a textarea for order details and a "Submit" button.
+
+When the form is submitted, it should:
+a. Get the text from the textarea.
+b. Make a POST request to the /api/orders backend endpoint with the order details.
+c. On success, close the modal and show a confirmation message.
+
+4. Update the Parent Component's JSX:
+
+Pass the new handler functions to the InventoryWidget component.
+
+JavaScript
+
+<InventoryWidget 
+  items={inventoryItems} 
+  onOrder={handleOrderClick} 
+  onManageInventory={handleInventoryClick} 
+/>
+Render the OrderModal component and control its visibility with the isOrderModalOpen state.
+
+JavaScript
+
+{isOrderModalOpen && (
+  <OrderModal 
+    onClose={() => setOrderModalOpen(false)} 
+  />
+)}
+Part 2: Backend and Database Confirmation
+Ensure the backend has the following API endpoints ready to be called from the frontend. The database connection should be to the existing PostgreSQL database.
+
+Endpoint: POST /api/orders
+
+Action: Receives orderDetails from the request body.
+
+Database: Inserts a new row into the orders table in PostgreSQL.
+
+Endpoint: GET /api/orders
+
+Action: Fetches all orders for the logged-in user.
+
+Database: Queries the orders table in PostgreSQL.
