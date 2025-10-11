@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { registerSchema, loginSchema, insertUserSchema } from "@shared/schema";
+import { registerSchema, loginSchema, insertUserSchema, insertOrderSchema } from "@shared/schema";
 
 // Simple in-memory session store
 const sessions = new Map<string, string>();
@@ -110,6 +110,47 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(userWithoutPassword);
     } catch (error) {
       res.status(400).json({ error: "Invalid update data" });
+    }
+  });
+
+  // Create a new order
+  app.post("/api/orders", async (req, res) => {
+    const sessionId = req.headers.authorization?.replace("Bearer ", "");
+    if (!sessionId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    const userId = sessions.get(sessionId);
+    if (!userId) {
+      return res.status(401).json({ error: "Invalid session" });
+    }
+
+    try {
+      const validatedData = insertOrderSchema.parse(req.body);
+      const order = await storage.createOrder(validatedData.orderDetails, userId);
+      res.json(order);
+    } catch (error) {
+      res.status(400).json({ error: "Invalid order data" });
+    }
+  });
+
+  // Get all orders for the current user
+  app.get("/api/orders", async (req, res) => {
+    const sessionId = req.headers.authorization?.replace("Bearer ", "");
+    if (!sessionId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    const userId = sessions.get(sessionId);
+    if (!userId) {
+      return res.status(401).json({ error: "Invalid session" });
+    }
+
+    try {
+      const orders = await storage.getUserOrders(userId);
+      res.json(orders);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch orders" });
     }
   });
 
