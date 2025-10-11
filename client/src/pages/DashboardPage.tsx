@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
+import { useLocation } from "wouter";
 import FarmerProfileSidebar from "@/components/FarmerProfileSidebar";
 import WeatherWidget from "@/components/WeatherWidget";
 import SoilHealthWidget from "@/components/SoilHealthWidget";
@@ -12,6 +13,7 @@ import EquipmentMaintenanceCard from "@/components/EquipmentMaintenanceCard";
 import IrrigationScheduleCard from "@/components/IrrigationScheduleCard";
 import HarvestCountdownCard from "@/components/HarvestCountdownCard";
 import AnalyticsChartCard from "@/components/AnalyticsChartCard";
+import PlaceOrderModal from "@/components/PlaceOrderModal";
 import { Leaf } from "lucide-react";
 
 type Tab = 'overview' | 'analytics' | 'management';
@@ -24,6 +26,8 @@ interface DashboardPageProps {
 
 export default function DashboardPage({ user, onLogout, onUserUpdate }: DashboardPageProps) {
   const [activeTab, setActiveTab] = useState<Tab>('overview');
+  const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
+  const [, setLocation] = useLocation();
 
   // TODO: Remove mock data - this is just for the prototype
   const salesData = [
@@ -174,8 +178,8 @@ export default function DashboardPage({ user, onLogout, onUserUpdate }: Dashboar
                   { name: 'Engine Oil', quantity: '250 ltr', status: 'Out of Stock' },
                   { name: 'Spare Parts', quantity: 'Various', status: 'In Stock' }
                 ]}
-                onOrder={() => console.log('Order clicked')}
-                onManageInventory={() => console.log('Manage inventory')}
+                onOrder={() => setIsOrderModalOpen(true)}
+                onManageInventory={() => setLocation('/order-history')}
               />
             </div>
           )}
@@ -272,6 +276,11 @@ export default function DashboardPage({ user, onLogout, onUserUpdate }: Dashboar
           </div>
         </footer>
       </div>
+
+      <PlaceOrderModal
+        open={isOrderModalOpen}
+        onOpenChange={setIsOrderModalOpen}
+      />
     </div>
   );
 }
