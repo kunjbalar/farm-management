@@ -6,6 +6,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import LoginPage from "@/components/LoginPage";
 import DashboardPage from "@/pages/DashboardPage";
+import OrderHistoryPage from "@/pages/OrderHistoryPage";
 import NotFound from "@/pages/not-found";
 
 function App() {
@@ -67,6 +68,7 @@ function App() {
         ) : (
           <Switch>
             <Route path="/" component={() => <DashboardPage user={user} onLogout={handleLogout} onUserUpdate={handleUserUpdate} />} />
+            <Route path="/order-history" component={OrderHistoryPage} />
             <Route component={NotFound} />
           </Switch>
         )}
