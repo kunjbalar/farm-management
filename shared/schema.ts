@@ -30,6 +30,7 @@ export const insertOrderSchema = createInsertSchema(orders).omit({
   id: true,
   orderId: true,
   orderDate: true,
+  userId: true,
 });
 
 export const loginSchema = z.object({

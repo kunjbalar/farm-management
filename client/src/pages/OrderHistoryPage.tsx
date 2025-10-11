@@ -20,7 +20,7 @@ export default function OrderHistoryPage() {
           <Button
             variant="ghost"
             size="icon"
-            onClick={() => setLocation("/dashboard")}
+            onClick={() => setLocation("/")}
             data-testid="button-back"
           >
             <ArrowLeft className="h-5 w-5" />
@@ -75,7 +75,7 @@ export default function OrderHistoryPage() {
               <p className="text-muted-foreground text-center mb-4">
                 You haven't placed any supply orders yet.
               </p>
-              <Button onClick={() => setLocation("/dashboard")} data-testid="button-go-to-dashboard">
+              <Button onClick={() => setLocation("/")} data-testid="button-go-to-dashboard">
                 Go to Dashboard
               </Button>
             </CardContent>
