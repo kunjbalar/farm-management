@@ -1,7 +1,7 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
-import { registerSchema, loginSchema, insertUserSchema, insertOrderSchema } from "@shared/schema";
+import { registerSchema, loginSchema, insertUserSchema, insertOrderSchema, insertInventorySchema } from "@shared/schema";
 
 // Simple in-memory session store
 const sessions = new Map<string, string>();
@@ -126,8 +126,20 @@ export async function registerRoutes(app: Express): Promise<Server> {
     }
 
     try {
-      const validatedData = insertOrderSchema.parse(req.body);
-      const order = await storage.createOrder(validatedData.orderDetails, userId);
+      const validatedOrderData = insertOrderSchema.parse(req.body);
+      const order = await storage.createOrder(validatedOrderData.orderDetails, userId);
+      
+      // Also add to inventory if we have structured data
+      if (req.body.name && req.body.status) {
+        const inventoryData = {
+          name: req.body.name,
+          quantity: req.body.quantity || "",
+          status: req.body.status,
+        };
+        const validatedInventoryData = insertInventorySchema.parse(inventoryData);
+        await storage.createInventoryItem(validatedInventoryData, userId);
+      }
+      
       res.json(order);
     } catch (error) {
       res.status(400).json({ error: "Invalid order data" });
@@ -151,6 +163,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       res.json(orders);
     } catch (error) {
       res.status(500).json({ error: "Failed to fetch orders" });
+    }
+  });
+
+  // Get all inventory items for the current user
+  app.get("/api/inventory", async (req, res) => {
+    const sessionId = req.headers.authorization?.replace("Bearer ", "");
+    if (!sessionId) {
+      return res.status(401).json({ error: "Not authenticated" });
+    }
+
+    const userId = sessions.get(sessionId);
+    if (!userId) {
+      return res.status(401).json({ error: "Invalid session" });
+    }
+
+    try {
+      const inventoryItems = await storage.getUserInventory(userId);
+      res.json(inventoryItems);
+    } catch (error) {
+      res.status(500).json({ error: "Failed to fetch inventory" });
     }
   });
 

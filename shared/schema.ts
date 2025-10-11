@@ -22,6 +22,14 @@ export const orders = pgTable("orders", {
   userId: varchar("user_id").notNull().references(() => users.id),
 });
 
+export const inventory = pgTable("inventory", {
+  id: serial("id").primaryKey(),
+  name: varchar("name", { length: 255 }).notNull(),
+  quantity: varchar("quantity", { length: 100 }),
+  status: varchar("status", { length: 50 }).notNull(),
+  userId: varchar("user_id").notNull().references(() => users.id),
+});
+
 export const insertUserSchema = createInsertSchema(users).omit({
   id: true,
 });
@@ -30,6 +38,11 @@ export const insertOrderSchema = createInsertSchema(orders).omit({
   id: true,
   orderId: true,
   orderDate: true,
+  userId: true,
+});
+
+export const insertInventorySchema = createInsertSchema(inventory).omit({
+  id: true,
   userId: true,
 });
 
@@ -53,3 +66,5 @@ export type LoginInput = z.infer<typeof loginSchema>;
 export type RegisterInput = z.infer<typeof registerSchema>;
 export type Order = typeof orders.$inferSelect;
 export type InsertOrder = z.infer<typeof insertOrderSchema>;
+export type Inventory = typeof inventory.$inferSelect;
+export type InsertInventory = z.infer<typeof insertInventorySchema>;

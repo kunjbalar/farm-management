@@ -1,6 +1,8 @@
 import { useState } from "react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
+import { useQuery } from "@tanstack/react-query";
+import type { Inventory } from "@shared/schema";
 import FarmerProfileSidebar from "@/components/FarmerProfileSidebar";
 import WeatherWidget from "@/components/WeatherWidget";
 import SoilHealthWidget from "@/components/SoilHealthWidget";
@@ -28,6 +30,10 @@ export default function DashboardPage({ user, onLogout, onUserUpdate }: Dashboar
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [, setLocation] = useLocation();
+
+  const { data: inventoryItems = [], isLoading: isLoadingInventory } = useQuery<Inventory[]>({
+    queryKey: ["/api/inventory"],
+  });
 
   // TODO: Remove mock data - this is just for the prototype
   const salesData = [
@@ -171,13 +177,11 @@ export default function DashboardPage({ user, onLogout, onUserUpdate }: Dashboar
                 onViewAllAlerts={() => console.log('View all alerts')}
               />
               <InventoryWidget
-                items={[
-                  { name: 'Wheat Seeds', quantity: '1500 kg', status: 'In Stock' },
-                  { name: 'Urea Fertilizer', quantity: '500 kg', status: 'Low Stock' },
-                  { name: 'Bio Pesticides', quantity: '30 ltr', status: 'In Stock' },
-                  { name: 'Engine Oil', quantity: '250 ltr', status: 'Out of Stock' },
-                  { name: 'Spare Parts', quantity: 'Various', status: 'In Stock' }
-                ]}
+                items={inventoryItems.map(item => ({
+                  name: item.name,
+                  quantity: item.quantity || 'N/A',
+                  status: item.status as 'In Stock' | 'Low Stock' | 'Out of Stock'
+                }))}
                 onOrder={() => setIsOrderModalOpen(true)}
                 onManageInventory={() => setLocation('/order-history')}
               />

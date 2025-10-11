@@ -1,0 +1,56 @@
+High-Level Objective:
+Thank you for migrating the order system to PostgreSQL. The Order History page is working correctly.
+
+However, the main goal is not yet complete. The main inventory list on the dashboard is still static and does not update when a new order is placed. The final step is to make this inventory list dynamic by storing it in the database and updating it when a new order is created.
+
+Plan to Implement
+Please follow these steps to complete the functionality:
+
+1. Backend: Create an inventory Table in PostgreSQL
+
+The current inventory is just a placeholder. We need a dedicated table for it.
+
+Please create a new table in the existing PostgreSQL database named inventory.
+
+The schema should be:
+
+SQL
+
+CREATE TABLE inventory (
+    id SERIAL PRIMARY KEY,
+    name VARCHAR(255) NOT NULL,
+    quantity VARCHAR(100),
+    status VARCHAR(50) NOT NULL,
+    user_id INTEGER REFERENCES users(id)
+);
+2. Frontend: Update the "Place Order" Modal
+
+The current modal with a single textbox is too simple. We need structured data.
+
+Please change the PlaceOrderModal component to have separate input fields:
+
+Item Name: (Text input)
+
+Quantity: (Text input, e.g., "500 kg")
+
+Status: (A dropdown/select with options: 'In Stock', 'Low Stock', 'Out of Stock')
+
+3. Backend: Update the API Endpoints
+
+Modify POST /api/orders:
+
+When a new order is submitted from the updated modal, this endpoint will receive structured data (name, quantity, status).
+
+After creating the record in the orders table, it must also insert a new record into the inventory table with this information.
+
+Create GET /api/inventory:
+
+Create a new endpoint that fetches all items from the inventory table for the logged-in user.
+
+4. Frontend: Make the Inventory Widget Dynamic
+
+In the main dashboard page component (e.g., DashboardPage.tsx), remove the static, hardcoded inventory array.
+
+Use a useEffect hook to call the new GET /api/inventory endpoint when the page loads.
+
+Use the data fetched from the API to populate the inventory list that gets passed to the <InventoryWidget />.

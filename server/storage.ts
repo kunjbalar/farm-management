@@ -1,5 +1,5 @@
-import { type User, type InsertUser, type Order } from "@shared/schema";
-import { users, orders } from "@shared/schema";
+import { type User, type InsertUser, type Order, type Inventory, type InsertInventory } from "@shared/schema";
+import { users, orders, inventory } from "@shared/schema";
 import { db } from "./db";
 import { eq, desc } from "drizzle-orm";
 
@@ -10,6 +10,8 @@ export interface IStorage {
   updateUser(id: string, user: Partial<InsertUser>): Promise<User | undefined>;
   createOrder(orderDetails: string, userId: string): Promise<Order>;
   getUserOrders(userId: string): Promise<Order[]>;
+  createInventoryItem(item: InsertInventory, userId: string): Promise<Inventory>;
+  getUserInventory(userId: string): Promise<Inventory[]>;
 }
 
 export class DatabaseStorage implements IStorage {
@@ -59,6 +61,24 @@ export class DatabaseStorage implements IStorage {
       .from(orders)
       .where(eq(orders.userId, userId))
       .orderBy(desc(orders.orderDate));
+  }
+
+  async createInventoryItem(item: InsertInventory, userId: string): Promise<Inventory> {
+    const [inventoryItem] = await db
+      .insert(inventory)
+      .values({
+        ...item,
+        userId,
+      })
+      .returning();
+    return inventoryItem;
+  }
+
+  async getUserInventory(userId: string): Promise<Inventory[]> {
+    return await db
+      .select()
+      .from(inventory)
+      .where(eq(inventory.userId, userId));
   }
 }
 

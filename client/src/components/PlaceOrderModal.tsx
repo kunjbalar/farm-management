@@ -8,8 +8,15 @@ import {
   DialogTitle,
 } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
-import { Textarea } from "@/components/ui/textarea";
+import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { useMutation } from "@tanstack/react-query";
 import { apiRequest, queryClient } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
@@ -19,21 +26,38 @@ interface PlaceOrderModalProps {
   onOpenChange: (open: boolean) => void;
 }
 
+interface OrderFormData {
+  name: string;
+  quantity: string;
+  status: string;
+}
+
 export default function PlaceOrderModal({ open, onOpenChange }: PlaceOrderModalProps) {
-  const [orderDetails, setOrderDetails] = useState("");
+  const [formData, setFormData] = useState<OrderFormData>({
+    name: "",
+    quantity: "",
+    status: "In Stock",
+  });
   const { toast } = useToast();
 
   const createOrderMutation = useMutation({
-    mutationFn: async (orderDetails: string) => {
-      return await apiRequest("POST", "/api/orders", { orderDetails });
+    mutationFn: async (data: OrderFormData) => {
+      const orderDetails = `${data.name} - ${data.quantity}`;
+      return await apiRequest("POST", "/api/orders", {
+        orderDetails,
+        name: data.name,
+        quantity: data.quantity,
+        status: data.status,
+      });
     },
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+      queryClient.invalidateQueries({ queryKey: ["/api/inventory"] });
       toast({
         title: "Order placed successfully!",
-        description: "Your supply order has been submitted.",
+        description: "Your supply order has been submitted and added to inventory.",
       });
-      setOrderDetails("");
+      setFormData({ name: "", quantity: "", status: "In Stock" });
       onOpenChange(false);
     },
     onError: () => {
@@ -46,15 +70,23 @@ export default function PlaceOrderModal({ open, onOpenChange }: PlaceOrderModalP
   });
 
   const handleSubmit = () => {
-    if (!orderDetails.trim()) {
+    if (!formData.name.trim()) {
       toast({
         title: "Error",
-        description: "Please enter order details.",
+        description: "Please enter item name.",
         variant: "destructive",
       });
       return;
     }
-    createOrderMutation.mutate(orderDetails);
+    if (!formData.quantity.trim()) {
+      toast({
+        title: "Error",
+        description: "Please enter quantity.",
+        variant: "destructive",
+      });
+      return;
+    }
+    createOrderMutation.mutate(formData);
   };
 
   return (
@@ -68,15 +100,40 @@ export default function PlaceOrderModal({ open, onOpenChange }: PlaceOrderModalP
         </DialogHeader>
         <div className="space-y-4 py-4">
           <div className="space-y-2">
-            <Label htmlFor="order-details">Order Details</Label>
-            <Textarea
-              id="order-details"
-              placeholder="e.g., 50 bags of Urea Fertilizer, 100kg of Wheat Seeds"
-              value={orderDetails}
-              onChange={(e) => setOrderDetails(e.target.value)}
-              rows={5}
-              data-testid="textarea-order-details"
+            <Label htmlFor="item-name">Item Name</Label>
+            <Input
+              id="item-name"
+              placeholder="e.g., Urea Fertilizer"
+              value={formData.name}
+              onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+              data-testid="input-item-name"
             />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="quantity">Quantity</Label>
+            <Input
+              id="quantity"
+              placeholder="e.g., 500 kg"
+              value={formData.quantity}
+              onChange={(e) => setFormData({ ...formData, quantity: e.target.value })}
+              data-testid="input-quantity"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="status">Status</Label>
+            <Select
+              value={formData.status}
+              onValueChange={(value) => setFormData({ ...formData, status: value })}
+            >
+              <SelectTrigger id="status" data-testid="select-status">
+                <SelectValue placeholder="Select status" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="In Stock">In Stock</SelectItem>
+                <SelectItem value="Low Stock">Low Stock</SelectItem>
+                <SelectItem value="Out of Stock">Out of Stock</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
         </div>
         <DialogFooter>
