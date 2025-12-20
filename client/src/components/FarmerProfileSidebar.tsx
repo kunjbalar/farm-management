@@ -1,10 +1,10 @@
-import { useState } from "react";
+import { useState, useRef } from "react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogFooter } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
-import { MapPin, Square, User, Leaf, Phone } from "lucide-react";
+import { MapPin, Square, User, Leaf, Phone, Camera } from "lucide-react";
 import { apiRequest } from "@/lib/queryClient";
 import { useToast } from "@/hooks/use-toast";
 
@@ -35,7 +35,9 @@ export default function FarmerProfileSidebar({
   const [editFarmLocation, setEditFarmLocation] = useState(user.farmLocation || "");
   const [editTotalArea, setEditTotalArea] = useState(user.totalArea || "");
   const [editContact, setEditContact] = useState(user.contact || "");
+  const [profilePhoto, setProfilePhoto] = useState(user.profilePhoto || "");
   const [loading, setLoading] = useState(false);
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
   const handleEditClick = () => {
@@ -44,7 +46,40 @@ export default function FarmerProfileSidebar({
     setEditFarmLocation(user.farmLocation || "");
     setEditTotalArea(user.totalArea || "");
     setEditContact(user.contact || "");
+    setProfilePhoto(user.profilePhoto || "");
     setIsDialogOpen(true);
+  };
+
+  const handlePhotoChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      // Check file size (max 2MB)
+      if (file.size > 2 * 1024 * 1024) {
+        toast({
+          title: "Error",
+          description: "Image size should be less than 2MB",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Check file type
+      if (!file.type.startsWith('image/')) {
+        toast({
+          title: "Error",
+          description: "Please select a valid image file",
+          variant: "destructive",
+        });
+        return;
+      }
+
+      // Convert to base64
+      const reader = new FileReader();
+      reader.onloadend = () => {
+        setProfilePhoto(reader.result as string);
+      };
+      reader.readAsDataURL(file);
+    }
   };
 
   const handleSave = async () => {
@@ -63,6 +98,7 @@ export default function FarmerProfileSidebar({
           farmLocation: editFarmLocation,
           totalArea: editTotalArea,
           contact: editContact,
+          profilePhoto: profilePhoto,
         }),
       });
 
@@ -94,12 +130,14 @@ export default function FarmerProfileSidebar({
         <h2 className="text-lg font-semibold text-sidebar-foreground mb-6">Farmer Profile</h2>
         
         <div className="flex flex-col items-center mb-6">
-          <Avatar className="w-24 h-24 mb-4">
-            <AvatarImage src="" />
-            <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
-              {farmerName.split(' ').map(n => n[0]).join('')}
-            </AvatarFallback>
-          </Avatar>
+          <div className="relative group">
+            <Avatar className="w-24 h-24 mb-4">
+              <AvatarImage src={user.profilePhoto || ""} />
+              <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
+                {farmerName.split(' ').map(n => n[0]).join('')}
+              </AvatarFallback>
+            </Avatar>
+          </div>
           <h3 className="font-semibold text-sidebar-foreground text-center" data-testid="text-farmer-name">{farmerName}</h3>
           <p className="text-sm text-muted-foreground">Premium Farmer Owner</p>
         </div>
@@ -137,6 +175,33 @@ export default function FarmerProfileSidebar({
           </DialogHeader>
           
           <div className="space-y-4 py-4">
+            <div className="flex flex-col items-center">
+              <div className="relative">
+                <Avatar className="w-24 h-24">
+                  <AvatarImage src={profilePhoto || ""} />
+                  <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
+                    {editName.split(' ').map((n: string) => n[0]).join('')}
+                  </AvatarFallback>
+                </Avatar>
+                <Button
+                  type="button"
+                  size="icon"
+                  variant="secondary"
+                  className="absolute bottom-0 right-0 rounded-full h-8 w-8"
+                  onClick={() => fileInputRef.current?.click()}
+                >
+                  <Camera className="h-4 w-4" />
+                </Button>
+                <input
+                  ref={fileInputRef}
+                  type="file"
+                  accept="image/*"
+                  className="hidden"
+                  onChange={handlePhotoChange}
+                />
+              </div>
+              <p className="text-xs text-muted-foreground mt-2">Click camera to change photo</p>
+            </div>
             <div>
               <Label htmlFor="edit-name">Full Name</Label>
               <div className="relative mt-1">

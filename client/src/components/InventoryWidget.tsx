@@ -1,8 +1,13 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Trash2 } from "lucide-react";
+import { useMutation, useQueryClient } from "@tanstack/react-query";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 interface InventoryItem {
+  id?: number;
   name: string;
   quantity: string;
   status: 'In Stock' | 'Low Stock' | 'Out of Stock';
@@ -21,6 +26,37 @@ const statusColors = {
 };
 
 export default function InventoryWidget({ items, onOrder, onManageInventory }: InventoryWidgetProps) {
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
+
+  const deleteInventoryMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const response = await apiRequest("DELETE", `/api/inventory/${id}`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/inventory"] });
+      toast({
+        title: "Success",
+        description: "Inventory item deleted successfully",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleDelete = (id: number | undefined, name: string) => {
+    if (!id) return;
+    if (confirm(`Are you sure you want to delete "${name}"?`)) {
+      deleteInventoryMutation.mutate(id);
+    }
+  };
+
   return (
     <Card>
       <CardHeader>
@@ -30,7 +66,7 @@ export default function InventoryWidget({ items, onOrder, onManageInventory }: I
       <CardContent>
         <div className="space-y-3">
           {items.map((item, index) => (
-            <div key={index} className="flex items-center justify-between">
+            <div key={index} className="flex items-center justify-between gap-2">
               <div className="flex-1">
                 <h4 className="font-medium text-sm" data-testid={`text-inventory-name-${index}`}>{item.name}</h4>
                 <p className="text-xs text-muted-foreground">{item.quantity}</p>
@@ -38,6 +74,17 @@ export default function InventoryWidget({ items, onOrder, onManageInventory }: I
               <Badge className={statusColors[item.status]} data-testid={`badge-inventory-status-${index}`}>
                 {item.status}
               </Badge>
+              {item.id && (
+                <Button
+                  variant="ghost"
+                  size="icon"
+                  className="h-8 w-8 text-destructive hover:text-destructive hover:bg-destructive/10"
+                  onClick={() => handleDelete(item.id, item.name)}
+                  data-testid={`button-delete-inventory-${index}`}
+                >
+                  <Trash2 className="h-4 w-4" />
+                </Button>
+              )}
             </div>
           ))}
         </div>

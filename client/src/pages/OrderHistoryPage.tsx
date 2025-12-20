@@ -1,17 +1,48 @@
-import { useQuery } from "@tanstack/react-query";
+import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { ArrowLeft, Package } from "lucide-react";
+import { ArrowLeft, Package, Trash2 } from "lucide-react";
 import { useLocation } from "wouter";
 import { format } from "date-fns";
 import type { Order } from "@shared/schema";
+import { useToast } from "@/hooks/use-toast";
+import { apiRequest } from "@/lib/queryClient";
 
 export default function OrderHistoryPage() {
   const [, setLocation] = useLocation();
+  const queryClient = useQueryClient();
+  const { toast } = useToast();
 
   const { data: orders, isLoading } = useQuery<Order[]>({
     queryKey: ["/api/orders"],
   });
+
+  const deleteOrderMutation = useMutation({
+    mutationFn: async (id: number) => {
+      const response = await apiRequest("DELETE", `/api/orders/${id}`);
+      return response.json();
+    },
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["/api/orders"] });
+      toast({
+        title: "Success",
+        description: "Order deleted successfully",
+      });
+    },
+    onError: (error: Error) => {
+      toast({
+        title: "Error",
+        description: error.message,
+        variant: "destructive",
+      });
+    },
+  });
+
+  const handleDelete = (id: number, orderId: string) => {
+    if (confirm(`Are you sure you want to delete order "${orderId}"?`)) {
+      deleteOrderMutation.mutate(id);
+    }
+  };
 
   return (
     <div className="min-h-screen bg-background p-6">
@@ -54,6 +85,15 @@ export default function OrderHistoryPage() {
                         </CardDescription>
                       </div>
                     </div>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                      onClick={() => handleDelete(order.id, order.orderId)}
+                      data-testid={`button-delete-order-${order.id}`}
+                    >
+                      <Trash2 className="h-4 w-4" />
+                    </Button>
                   </div>
                 </CardHeader>
                 <CardContent>

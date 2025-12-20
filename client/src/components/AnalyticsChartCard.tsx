@@ -9,6 +9,9 @@ interface AnalyticsChartCardProps {
 }
 
 export default function AnalyticsChartCard({ title, description, chartType, data }: AnalyticsChartCardProps) {
+  // Check if data is empty
+  const isEmpty = !data || data.length === 0;
+
   return (
     <Card>
       <CardHeader>
@@ -17,7 +20,16 @@ export default function AnalyticsChartCard({ title, description, chartType, data
       </CardHeader>
       <CardContent>
         <div className="h-64">
-          {chartType === 'line' && (
+          {isEmpty ? (
+            <div className="h-full flex items-center justify-center">
+              <div className="text-center">
+                <p className="text-muted-foreground text-sm">No data available</p>
+                <p className="text-muted-foreground text-xs mt-1">Add items to see analytics</p>
+              </div>
+            </div>
+          ) : (
+            <>
+              {chartType === 'line' && (
             <ResponsiveContainer width="100%" height="100%">
               <LineChart data={data}>
                 <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
@@ -39,16 +51,18 @@ export default function AnalyticsChartCard({ title, description, chartType, data
               </BarChart>
             </ResponsiveContainer>
           )}
-          {chartType === 'area' && (
-            <ResponsiveContainer width="100%" height="100%">
-              <AreaChart data={data}>
-                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
-                <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
-                <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }} />
-                <Area type="monotone" dataKey="value" stroke="hsl(var(--chart-1))" fill="hsl(var(--chart-1))" fillOpacity={0.3} />
-              </AreaChart>
-            </ResponsiveContainer>
+              {chartType === 'area' && (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart data={data}>
+                    <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                    <XAxis dataKey="name" stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                    <YAxis stroke="hsl(var(--muted-foreground))" fontSize={12} />
+                    <Tooltip contentStyle={{ backgroundColor: 'hsl(var(--card))', border: '1px solid hsl(var(--border))' }} />
+                    <Area type="monotone" dataKey="value" stroke="hsl(var(--chart-1))" fill="hsl(var(--chart-1))" fillOpacity={0.3} />
+                  </AreaChart>
+                </ResponsiveContainer>
+              )}
+            </>
           )}
         </div>
       </CardContent>

@@ -4,6 +4,7 @@ import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
+import { ThemeProvider } from "@/components/theme-provider";
 import LoginPage from "@/components/LoginPage";
 import DashboardPage from "@/pages/DashboardPage";
 import OrderHistoryPage from "@/pages/OrderHistoryPage";
@@ -61,18 +62,20 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        {!user ? (
-          <LoginPage onLogin={handleLogin} />
-        ) : (
-          <Switch>
-            <Route path="/" component={() => <DashboardPage user={user} onLogout={handleLogout} onUserUpdate={handleUserUpdate} />} />
-            <Route path="/order-history" component={OrderHistoryPage} />
-            <Route component={NotFound} />
-          </Switch>
-        )}
-      </TooltipProvider>
+      <ThemeProvider defaultTheme="light" storageKey="farm-management-theme">
+        <TooltipProvider>
+          <Toaster />
+          {!user ? (
+            <LoginPage onLogin={handleLogin} />
+          ) : (
+            <Switch>
+              <Route path="/" component={() => <DashboardPage user={user} onLogout={handleLogout} onUserUpdate={handleUserUpdate} />} />
+              <Route path="/order-history" component={OrderHistoryPage} />
+              <Route component={NotFound} />
+            </Switch>
+          )}
+        </TooltipProvider>
+      </ThemeProvider>
     </QueryClientProvider>
   );
 }

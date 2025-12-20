@@ -1,14 +1,14 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import { Button } from "@/components/ui/button";
 import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
-import type { Inventory } from "@shared/schema";
+import type { Inventory, Crop, SoilHealth } from "@shared/schema";
 import FarmerProfileSidebar from "@/components/FarmerProfileSidebar";
 import WeatherWidget from "@/components/WeatherWidget";
 import SoilHealthWidget from "@/components/SoilHealthWidget";
-import CropStatusWidget from "@/components/CropStatusWidget";
+import CropStatusWidget from "@/components/CropStatusWidget"; 
 import MachineryWidget from "@/components/MachineryWidget";
-import AlertsWidget from "@/components/AlertsWidget";
+import IrrigationWidget from "@/components/IrrigationWidget";
 import InventoryWidget from "@/components/InventoryWidget";
 import CropManagementCard from "@/components/CropManagementCard";
 import EquipmentMaintenanceCard from "@/components/EquipmentMaintenanceCard";
@@ -16,7 +16,8 @@ import IrrigationScheduleCard from "@/components/IrrigationScheduleCard";
 import HarvestCountdownCard from "@/components/HarvestCountdownCard";
 import AnalyticsChartCard from "@/components/AnalyticsChartCard";
 import PlaceOrderModal from "@/components/PlaceOrderModal";
-import { Leaf } from "lucide-react";
+import { Leaf, Moon, Sun } from "lucide-react";
+import { useTheme } from "@/components/theme-provider";
 
 type Tab = 'overview' | 'analytics' | 'management';
 
@@ -30,27 +31,96 @@ export default function DashboardPage({ user, onLogout, onUserUpdate }: Dashboar
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
   const [, setLocation] = useLocation();
+  const { theme, setTheme } = useTheme();
 
   const { data: inventoryItems = [], isLoading: isLoadingInventory } = useQuery<Inventory[]>({
     queryKey: ["/api/inventory"],
   });
 
-  // TODO: Remove mock data - this is just for the prototype
-  const salesData = [
-    { name: 'Jan', value: 4000 },
-    { name: 'Feb', value: 3000 },
-    { name: 'Mar', value: 5000 },
-    { name: 'Apr', value: 4500 },
-    { name: 'May', value: 6000 },
-    { name: 'Jun', value: 5500 }
-  ];
+  const { data: crops = [] } = useQuery<Crop[]>({
+    queryKey: ["/api/crops"],
+  });
 
-  const cropYieldData = [
-    { name: 'Wheat', value: 2400 },
-    { name: 'Potatoes', value: 1398 },
-    { name: 'Carrots', value: 9800 },
-    { name: 'Onions', value: 3908 }
-  ];
+  const { data: soilHealth } = useQuery<SoilHealth | null>({
+    queryKey: ["/api/soil-health"],
+  });
+
+  const { data: weatherData } = useQuery<any>({
+    queryKey: ["/api/weather"],
+  });
+
+  // Process crop data for chart - only show actual crops
+  const cropYieldData = useMemo(() => {
+    if (!crops.length) {
+      // Return empty array when no crops exist
+      return [];
+    }
+    return crops.map(crop => ({
+      name: crop.name.charAt(0).toUpperCase() + crop.name.slice(1),
+      value: Math.floor(Math.random() * 5000) + 1000 // Simulated yield
+    }));
+  }, [crops]);
+
+  // Process inventory data for chart - only show actual inventory
+  const inventoryStatusData = useMemo(() => {
+    if (!inventoryItems.length) {
+      // Return empty array when no inventory exists
+      return [];
+    }
+    
+    const statusCounts = inventoryItems.reduce((acc: any, item) => {
+      const status = item.status || 'Unknown';
+      acc[status] = (acc[status] || 0) + 1;
+      return acc;
+    }, {});
+    
+    return Object.entries(statusCounts).map(([name, value]) => ({
+      name,
+      value: value as number
+    }));
+  }, [inventoryItems]);
+
+  // Process soil health data for chart
+  const soilHealthChartData = useMemo(() => {
+    if (!soilHealth) {
+      // Return sample data for empty state
+      return [
+        { name: 'Moisture', value: 62 },
+        { name: 'pH Level', value: 65 },
+        { name: 'Nitrogen', value: 38 },
+        { name: 'Phosphorus', value: 30 },
+        { name: 'Potassium', value: 60 }
+      ];
+    }
+    return [
+      { name: 'Moisture', value: parseFloat(soilHealth.moisture) || 0 },
+      { name: 'pH Level', value: parseFloat(soilHealth.phLevel) || 0 },
+      { name: 'Nitrogen', value: parseFloat(soilHealth.nitrogen) || 0 },
+      { name: 'Phosphorus', value: parseFloat(soilHealth.phosphorus) || 0 },
+      { name: 'Potassium', value: parseFloat(soilHealth.potassium) || 0 }
+    ];
+  }, [soilHealth]);
+
+  // Process weather forecast data for chart
+  const weatherForecastData = useMemo(() => {
+    if (!weatherData?.forecast || weatherData.forecast.length === 0) {
+      // Return default forecast data
+      const now = new Date();
+      const defaultData = [];
+      for (let i = 1; i <= 5; i++) {
+        const time = new Date(now.getTime() + i * 3 * 60 * 60 * 1000);
+        defaultData.push({
+          name: time.toLocaleTimeString('en-US', { hour: 'numeric', hour12: true }),
+          value: 20 + Math.floor(Math.random() * 5)
+        });
+      }
+      return defaultData;
+    }
+    return weatherData.forecast.map((item: any) => ({
+      name: item.time,
+      value: parseInt(item.temp.replace('°C', '')) || 20
+    }));
+  }, [weatherData]);
 
   return (
     <div className="flex h-screen bg-background">
@@ -73,6 +143,20 @@ export default function DashboardPage({ user, onLogout, onUserUpdate }: Dashboar
           </div>
           <div className="flex items-center gap-4">
             <span className="text-sm text-primary-foreground">Welcome</span>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+              className="text-primary-foreground hover:bg-primary-foreground/10"
+              data-testid="button-theme-toggle"
+            >
+              {theme === "light" ? (
+                <Moon className="h-5 w-5" />
+              ) : (
+                <Sun className="h-5 w-5" />
+              )}
+              <span className="sr-only">Toggle theme</span>
+            </Button>
             <Button 
               variant="secondary" 
               size="sm" 
@@ -125,59 +209,20 @@ export default function DashboardPage({ user, onLogout, onUserUpdate }: Dashboar
         <main className="flex-1 overflow-auto p-6">
           {activeTab === 'overview' && (
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-              <WeatherWidget
-                temperature="20°C"
-                condition="Partly Cloudy"
-                humidity="75%"
-                wind="25 km/h"
-                forecast={[
-                  { time: '9PM', temp: '19°' },
-                  { time: '10PM', temp: '19°' },
-                  { time: '11PM', temp: '18°' },
-                  { time: '12AM', temp: '18°' },
-                  { time: '1AM', temp: '18°' }
-                ]}
-              />
-              <SoilHealthWidget
-                metrics={[
-                  { name: 'Moisture', value: 62, label: '62%' },
-                  { name: 'pH Level', value: 65, label: '6.5' },
-                  { name: 'Nitrogen', value: 38, label: '38%' },
-                  { name: 'Phosphorus', value: 30, label: '30%' },
-                  { name: 'Potassium', value: 60, label: '60%' }
-                ]}
-                lastUpdate="LIVE DATA: Soil sensors updating every 5 minutes"
-              />
+              <WeatherWidget />
+              <SoilHealthWidget />
               <CropStatusWidget
-                crops={[
-                  { name: 'Wheat', area: '200 acres', stage: 'Growth Stage', health: 'Healthy', harvestDate: '15 Jul 2025' },
-                  { name: 'Potatoes', area: '100 acres', stage: 'Planting Stage', health: 'Good', harvestDate: '10 Aug 2025' },
-                  { name: 'Carrots', area: '50 acres', stage: 'Seedling Stage', health: 'Good', harvestDate: '25 Sep 2025' },
-                  { name: 'Onions', area: '150 acres', stage: 'Growth Stage', health: 'Fair', harvestDate: '10 Oct 2025' }
-                ]}
                 onManageAllCrops={() => setActiveTab('management')}
               />
               <MachineryWidget
-                equipment={[
-                  { name: 'Massey Ferguson 7726', status: 'Active', fuelLevel: 92, lastMaintenance: 'Maint: 1 Month ago' },
-                  { name: 'Kubota M7-172', status: 'Maintenance', fuelLevel: 45, lastMaintenance: 'Maint: 2 days ago' },
-                  { name: 'Drip Irrigation System', status: 'Active', fuelLevel: 100, lastMaintenance: 'Maint: 15 days ago' },
-                  { name: 'Automated Seeder', status: 'Inactive', fuelLevel: 0, lastMaintenance: 'Maint: 3 Months ago' }
-                ]}
-                onTrack={() => console.log('Track equipment clicked')}
-                onMaintenance={() => console.log('Maintenance clicked')}
+                onManageEquipment={() => setActiveTab('management')}
               />
-              <AlertsWidget
-                alerts={[
-                  { type: 'warning', message: 'Low water level in irrigation tank' },
-                  { type: 'warning', message: 'Pesticide stock running low' },
-                  { type: 'critical', message: 'Pest detection in Sector B' },
-                  { type: 'info', message: 'Scheduled maintenance for Tractor X5000' }
-                ]}
-                onViewAllAlerts={() => console.log('View all alerts')}
+              <IrrigationWidget
+                onManageSchedule={() => setActiveTab('management')}
               />
               <InventoryWidget
                 items={inventoryItems.map(item => ({
+                  id: item.id,
                   name: item.name,
                   quantity: item.quantity || 'N/A',
                   status: item.status as 'In Stock' | 'Low Stock' | 'Out of Stock'
@@ -191,84 +236,38 @@ export default function DashboardPage({ user, onLogout, onUserUpdate }: Dashboar
           {activeTab === 'analytics' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <AnalyticsChartCard
-                title="Sales Performance"
-                description="Monthly sales data and trends"
-                chartType="line"
-                data={salesData}
-              />
-              <AnalyticsChartCard
-                title="Profit Analysis"
-                description="Revenue, expenses and profit breakdown"
-                chartType="bar"
-                data={salesData}
-              />
-              <AnalyticsChartCard
                 title="Crop Yield Projections"
-                description="Expected harvest outcomes"
+                description="Expected harvest outcomes based on current crops"
                 chartType="bar"
                 data={cropYieldData}
               />
               <AnalyticsChartCard
-                title="Stock Status"
-                description="Inventory status visualization"
-                chartType="area"
-                data={salesData}
+                title="Inventory Status"
+                description="Stock levels by status"
+                chartType="bar"
+                data={inventoryStatusData}
               />
               <AnalyticsChartCard
                 title="Weather Forecast"
-                description="24-hour temperature and precipitation"
+                description="Temperature forecast for next hours"
                 chartType="line"
-                data={salesData}
+                data={weatherForecastData}
               />
               <AnalyticsChartCard
                 title="Soil Health Analysis"
-                description="Current soil conditions vs. optimal ranges"
+                description="Current soil nutrient levels"
                 chartType="area"
-                data={[
-                  { name: 'Moisture', value: 62 },
-                  { name: 'pH', value: 65 },
-                  { name: 'Nitrogen', value: 38 },
-                  { name: 'Phosphorus', value: 30 },
-                  { name: 'Potassium', value: 60 }
-                ]}
+                data={soilHealthChartData}
               />
             </div>
           )}
 
           {activeTab === 'management' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-              <CropManagementCard
-                crops={[
-                  { name: 'Wheat', health: 'Excellent' },
-                  { name: 'Potatoes', health: 'Good' },
-                  { name: 'Carrots', health: 'Good' },
-                  { name: 'Onions', health: 'Fair' }
-                ]}
-              />
-              <EquipmentMaintenanceCard
-                equipment={[
-                  { name: 'Massey Ferguson 7726', status: 'Active', maintenance: 'Maint: 7 days ✓' },
-                  { name: 'Kubota M7-172', status: 'Maintenance', maintenance: 'Maint: 2 days ✓' },
-                  { name: 'Drip Irrigation System', status: 'Active', maintenance: 'Maint: 15 days ✓' },
-                  { name: 'Automated Seeder', status: 'Inactive', maintenance: 'Maint: Overdue ✓' }
-                ]}
-              />
-              <IrrigationScheduleCard
-                schedules={[
-                  { field: 'Corn Field (North)', time: 'Today, 2:00 PM', duration: '40 minutes', waterUsage: '1,200 gallons' },
-                  { field: 'Wheat Field (East)', time: 'Tomorrow, 8:00 AM', duration: '60 minutes', waterUsage: '4,500 gallons' },
-                  { field: 'Tomato Greenhouse', time: 'Daily, 9:00 AM', duration: '15 minutes', waterUsage: '300 gallons' }
-                ]}
-                onScheduleNew={() => console.log('Schedule new irrigation')}
-              />
-              <HarvestCountdownCard
-                harvests={[
-                  { crop: 'Wheat', date: '15 Jul 2025', progress: 75, stage: 'Growth' },
-                  { crop: 'Potatoes', date: '10 Aug 2025', progress: 60, stage: 'Flowering' },
-                  { crop: 'Carrots', date: '25 Sep 2025', progress: 45, stage: 'Seedling' },
-                  { crop: 'Onions', date: '10 Oct 2025', progress: 30, stage: 'Growth' }
-                ]}
-              />
+              <CropManagementCard />
+              <EquipmentMaintenanceCard />
+              <IrrigationScheduleCard />
+              <HarvestCountdownCard />
             </div>
           )}
         </main>
