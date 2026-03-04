@@ -123,7 +123,7 @@ export default function DashboardPage({ user, onLogout, onUserUpdate }: Dashboar
   }, [weatherData]);
 
   return (
-    <div className="flex h-screen bg-background">
+    <div className="flex min-h-screen flex-col bg-background lg:h-screen lg:flex-row">
       <FarmerProfileSidebar
         farmerName={user.name || "Farmer"}
         farmName={user.farmName || "Not Set"}
@@ -135,13 +135,13 @@ export default function DashboardPage({ user, onLogout, onUserUpdate }: Dashboar
         onUserUpdate={onUserUpdate}
       />
 
-      <div className="flex-1 flex flex-col overflow-hidden">
-        <header className="bg-primary border-b border-primary-border px-6 py-4 flex items-center justify-between">
+      <div className="flex-1 flex min-w-0 flex-col overflow-hidden">
+        <header className="bg-primary border-b border-primary-border px-6 py-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
           <div className="flex items-center gap-3">
             <Leaf className="w-6 h-6 text-primary-foreground" />
             <h1 className="text-xl font-bold text-primary-foreground">Farm Management</h1>
           </div>
-          <div className="flex items-center gap-4">
+          <div className="flex flex-wrap items-center gap-3 sm:gap-4">
             <span className="text-sm text-primary-foreground">Welcome</span>
             <Button
               variant="ghost"
@@ -169,7 +169,7 @@ export default function DashboardPage({ user, onLogout, onUserUpdate }: Dashboar
         </header>
 
         <div className="bg-background border-b border-border px-6">
-          <div className="flex gap-6">
+          <div className="flex flex-wrap gap-6">
             <button
               onClick={() => setActiveTab('overview')}
               className={`py-3 px-1 border-b-2 transition-colors ${
@@ -273,7 +273,7 @@ export default function DashboardPage({ user, onLogout, onUserUpdate }: Dashboar
         </main>
 
         <footer className="bg-background border-t border-border px-6 py-3">
-          <div className="flex items-center justify-between text-xs text-muted-foreground">
+          <div className="flex flex-col gap-2 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
             <p>© 2025 Farm Management. All rights reserved.</p>
             <p>All systems operational | AWS ✓ | Last Sync: Just now</p>
           </div>

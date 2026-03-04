@@ -158,12 +158,12 @@ export default function IrrigationScheduleCard() {
           <div className="space-y-3 mb-4">
             {irrigations.map((irrigation) => (
               <div key={irrigation.id} className="p-3 rounded-lg border border-border">
-                <div className="flex items-center gap-2 mb-2">
+                <div className="flex flex-wrap items-center gap-2 mb-2">
                   <Droplets className="w-4 h-4 text-primary" />
                   <h4 className="font-semibold text-sm" data-testid={`text-field-${irrigation.id}`}>
                     {irrigation.fieldName}
                   </h4>
-                  <span className="text-sm text-muted-foreground ml-auto">
+                  <span className="text-sm text-muted-foreground sm:ml-auto">
                     {formatScheduledTime(irrigation.scheduledTime)}
                   </span>
                   <Button
@@ -277,7 +277,7 @@ export default function IrrigationScheduleCard() {
                   placeholder="Additional notes..."
                 />
               </div>
-              <div className="flex gap-2">
+              <div className="flex flex-col gap-2 sm:flex-row">
                 <Button type="submit" className="flex-1">
                   {editingIrrigation ? 'Update' : 'Create'}
                 </Button>

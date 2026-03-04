@@ -88,7 +88,7 @@ export default function IrrigationWidget({ onManageSchedule }: IrrigationWidgetP
   return (
     <Card>
       <CardHeader>
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-2">
           <CardTitle className="text-lg">Irrigation Schedule</CardTitle>
           <Calendar className="w-5 h-5 text-muted-foreground" />
         </div>
@@ -126,7 +126,7 @@ export default function IrrigationWidget({ onManageSchedule }: IrrigationWidgetP
                   <div className="flex items-start gap-2">
                     <Droplets className="w-4 h-4 text-blue-500 mt-0.5" />
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2 mb-1">
+                      <div className="flex flex-wrap items-center gap-2 mb-1">
                         <h4 className="font-semibold text-sm truncate">
                           {irrigation.fieldName}
                         </h4>
@@ -137,7 +137,7 @@ export default function IrrigationWidget({ onManageSchedule }: IrrigationWidgetP
                       <p className="text-xs text-muted-foreground">
                         {formatScheduledTime(irrigation.scheduledTime)}
                       </p>
-                      <div className="flex gap-3 mt-1">
+                      <div className="flex flex-wrap gap-3 mt-1">
                         <p className="text-xs text-muted-foreground">
                           ⏱️ {irrigation.duration}
                         </p>

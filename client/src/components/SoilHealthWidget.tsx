@@ -110,7 +110,7 @@ export default function SoilHealthWidget() {
   return (
     <Card>
       <CardHeader>
-        <div className="flex justify-between items-start">
+        <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
             <CardTitle className="text-lg">Soil Health</CardTitle>
             <p className="text-sm text-muted-foreground">Readiness and monitoring</p>
@@ -126,7 +126,7 @@ export default function SoilHealthWidget() {
               Edit
             </Button>
           ) : (
-            <div className="flex gap-2">
+            <div className="flex flex-wrap gap-2">
               <Button
                 variant="outline"
                 size="sm"

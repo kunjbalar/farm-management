@@ -38,7 +38,7 @@ export default function FarmerProfileSidebar({
   const [profilePhoto, setProfilePhoto] = useState(user.profilePhoto || "");
   const [loading, setLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
-  const { toast } = useToast();
+  const { toast } = useToast();  
 
   const handleEditClick = () => {
     setEditName(user.name || "");
@@ -126,7 +126,7 @@ export default function FarmerProfileSidebar({
 
   return (
     <>
-      <div className="w-64 bg-sidebar border-r border-sidebar-border p-6 flex flex-col">
+      <div className="w-full flex-shrink-0 bg-sidebar border-b border-sidebar-border p-6 flex flex-col lg:w-64 lg:border-b-0 lg:border-r">
         <h2 className="text-lg font-semibold text-sidebar-foreground mb-6">Farmer Profile</h2>
         
         <div className="flex flex-col items-center mb-6">
@@ -139,7 +139,7 @@ export default function FarmerProfileSidebar({
             </Avatar>
           </div>
           <h3 className="font-semibold text-sidebar-foreground text-center" data-testid="text-farmer-name">{farmerName}</h3>
-          <p className="text-sm text-muted-foreground">Premium Farmer Owner</p>
+          <p className="text-sm text-muted-foreground"> Farm Owner</p>
         </div>
 
         <div className="space-y-4 flex-1">

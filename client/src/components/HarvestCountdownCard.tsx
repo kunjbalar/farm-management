@@ -154,7 +154,7 @@ export default function HarvestCountdownCard() {
                 
                 return (
                   <div key={crop.id}>
-                    <div className="flex items-start justify-between mb-2">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between mb-2">
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
                           <h4 className="font-semibold text-sm" data-testid={`text-harvest-crop-${index}`}>
@@ -236,7 +236,7 @@ export default function HarvestCountdownCard() {
                 </Select>
               </div>
 
-              <div className="grid grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                 <div>
                   <Label htmlFor="plantingDate">Planting Date</Label>
                   <Input

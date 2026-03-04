@@ -66,8 +66,8 @@ export default function InventoryWidget({ items, onOrder, onManageInventory }: I
       <CardContent>
         <div className="space-y-3">
           {items.map((item, index) => (
-            <div key={index} className="flex items-center justify-between gap-2">
-              <div className="flex-1">
+            <div key={index} className="flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
+              <div className="flex-1 min-w-0">
                 <h4 className="font-medium text-sm" data-testid={`text-inventory-name-${index}`}>{item.name}</h4>
                 <p className="text-xs text-muted-foreground">{item.quantity}</p>
               </div>
@@ -89,7 +89,7 @@ export default function InventoryWidget({ items, onOrder, onManageInventory }: I
           ))}
         </div>
 
-        <div className="flex gap-2 mt-4">
+        <div className="flex flex-col gap-2 mt-4 sm:flex-row">
           <Button 
             variant="default" 
             size="sm" 

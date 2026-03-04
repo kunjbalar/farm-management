@@ -47,7 +47,7 @@ export default function OrderHistoryPage() {
   return (
     <div className="min-h-screen bg-background p-6">
       <div className="max-w-6xl mx-auto space-y-6">
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
           <Button
             variant="ghost"
             size="icon"
@@ -71,8 +71,8 @@ export default function OrderHistoryPage() {
             {orders.map((order) => (
               <Card key={order.id} data-testid={`card-order-${order.id}`}>
                 <CardHeader>
-                  <div className="flex items-start justify-between">
-                    <div className="flex items-center gap-3">
+                  <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
+                    <div className="flex items-center gap-3 min-w-0">
                       <div className="p-2 bg-primary/10 rounded-lg">
                         <Package className="h-5 w-5 text-primary" />
                       </div>

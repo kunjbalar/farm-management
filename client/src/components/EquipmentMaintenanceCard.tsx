@@ -159,9 +159,10 @@ export default function EquipmentMaintenanceCard() {
     setFormData(initialFormData);
   };
 
-  const getMaintenanceStatus = (nextMaintenance: string | null) => {
+  const getMaintenanceStatus = (nextMaintenance: Date | string | null) => {
     if (!nextMaintenance) return null;
-    const daysUntil = Math.ceil((new Date(nextMaintenance).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+    const maintenanceDate = nextMaintenance instanceof Date ? nextMaintenance : new Date(nextMaintenance);
+    const daysUntil = Math.ceil((maintenanceDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
     if (daysUntil < 0) return <Badge variant="destructive">Overdue by {Math.abs(daysUntil)} days</Badge>;
     if (daysUntil <= 7) return <Badge variant="outline" className="bg-yellow-50 text-yellow-800">Due in {daysUntil} days</Badge>;
     return <Badge variant="outline" className="bg-green-50 text-green-800">Due in {daysUntil} days</Badge>;
@@ -184,7 +185,7 @@ export default function EquipmentMaintenanceCard() {
                 <DialogTitle>{editingEquipment ? 'Edit Equipment' : 'Add New Equipment'}</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="name">Equipment Name *</Label>
                     <Input
@@ -207,7 +208,7 @@ export default function EquipmentMaintenanceCard() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="status">Status</Label>
                     <Select value={formData.status} onValueChange={(value) => setFormData({ ...formData, status: value })}>
@@ -233,7 +234,7 @@ export default function EquipmentMaintenanceCard() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="lastMaintenance">Last Maintenance Date</Label>
                     <Input
@@ -289,7 +290,7 @@ export default function EquipmentMaintenanceCard() {
         ) : (
           <div className="space-y-3">
             {equipment.map((equip) => (
-              <div key={equip.id} className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-accent/50 transition-colors">
+              <div key={equip.id} className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-3 rounded-lg border border-border hover:bg-accent/50 transition-colors">
                 <div className="flex items-center gap-3 flex-1">
                   <Tractor className="w-5 h-5 text-muted-foreground" />
                   <div className="flex-1">
@@ -313,7 +314,7 @@ export default function EquipmentMaintenanceCard() {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <Badge className={statusColors[equip.status as keyof typeof statusColors] || statusColors.Operational}>
                     {equip.status}
                   </Badge>

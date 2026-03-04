@@ -16,10 +16,11 @@ const statusColors = {
   'Idle': 'bg-gray-500 text-white'
 };
 
-const getMaintenanceText = (nextMaintenance: string | null): { text: string; urgent: boolean } => {
+const getMaintenanceText = (nextMaintenance: Date | string | null): { text: string; urgent: boolean } => {
   if (!nextMaintenance) return { text: 'Not scheduled', urgent: false };
   
-  const daysUntil = Math.ceil((new Date(nextMaintenance).getTime() - Date.now()) / (1000 * 60 * 60 * 24));
+  const maintenanceDate = nextMaintenance instanceof Date ? nextMaintenance : new Date(nextMaintenance);
+  const daysUntil = Math.ceil((maintenanceDate.getTime() - Date.now()) / (1000 * 60 * 60 * 24));
   
   if (daysUntil < 0) return { text: `Overdue by ${Math.abs(daysUntil)} days`, urgent: true };
   if (daysUntil === 0) return { text: 'Due today', urgent: true };
@@ -70,9 +71,9 @@ export default function MachineryWidget({ onManageEquipment }: MachineryWidgetPr
                 const fuelPercent = parseFuelLevel(item.fuelLevel);
                 
                 return (
-                  <div key={item.id} className="flex items-center justify-between p-3 rounded-lg border border-border">
+                  <div key={item.id} className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-3 rounded-lg border border-border">
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
+                      <div className="flex flex-wrap items-center gap-2 mb-1">
                         <h4 className="font-semibold text-sm" data-testid={`text-equipment-name-${index}`}>
                           {item.name}
                         </h4>
@@ -89,7 +90,7 @@ export default function MachineryWidget({ onManageEquipment }: MachineryWidgetPr
                         </span>
                       </div>
                     </div>
-                    <div className="text-right">
+                    <div className="w-full sm:w-auto text-left sm:text-right">
                       <div className="flex items-center gap-1 text-sm font-medium" data-testid={`text-fuel-level-${index}`}>
                         <Fuel className="w-4 h-4" />
                         {item.fuelLevel || 'N/A'}

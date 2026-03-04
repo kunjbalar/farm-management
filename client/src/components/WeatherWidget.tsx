@@ -90,7 +90,7 @@ export default function WeatherWidget() {
         </p>
       </CardHeader>
       <CardContent>
-        <div className="flex items-center justify-between mb-6">
+        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
           <div>
             <div className="text-4xl font-bold" data-testid="text-temperature">{displayWeather.temperature}</div>
             <div className="text-sm text-muted-foreground mt-1">{displayWeather.condition}</div>
@@ -114,7 +114,7 @@ export default function WeatherWidget() {
         {displayWeather.forecast && displayWeather.forecast.length > 0 && (
           <div className="border-t border-border pt-4">
             <div className="text-sm font-medium mb-2">Forecast</div>
-            <div className="flex justify-between">
+            <div className="flex flex-wrap gap-4 sm:flex-nowrap sm:justify-between">
               {displayWeather.forecast.map((item, index) => (
                 <div key={index} className="text-center">
                   <div className="text-xs text-muted-foreground mb-1">{item.time}</div>

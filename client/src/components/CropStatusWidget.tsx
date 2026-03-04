@@ -80,9 +80,9 @@ export default function CropStatusWidget({ onManageAllCrops }: CropStatusWidgetP
                 );
                 
                 return (
-                  <div key={crop.id} className="flex items-center justify-between">
+                  <div key={crop.id} className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex-1">
-                      <div className="flex items-center gap-2 mb-1">
+                      <div className="flex flex-wrap items-center gap-2 mb-1">
                         <h4 className="font-semibold" data-testid={`text-crop-name-${index}`}>
                           {crop.name}
                           {crop.variety && <span className="text-muted-foreground font-normal text-sm"> ({crop.variety})</span>}

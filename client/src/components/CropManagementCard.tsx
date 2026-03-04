@@ -187,7 +187,7 @@ export default function CropManagementCard() {
                 <DialogTitle>{editingCrop ? 'Edit Crop' : 'Add New Crop'}</DialogTitle>
               </DialogHeader>
               <form onSubmit={handleSubmit} className="space-y-4">
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="name">Crop Name *</Label>
                     <Input
@@ -209,7 +209,7 @@ export default function CropManagementCard() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="area">Area</Label>
                     <Input
@@ -234,7 +234,7 @@ export default function CropManagementCard() {
                   </div>
                 </div>
 
-                <div className="grid grid-cols-2 gap-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                   <div>
                     <Label htmlFor="plantingDate">Planting Date</Label>
                     <Input
@@ -305,7 +305,7 @@ export default function CropManagementCard() {
         ) : (
           <div className="space-y-3">
             {crops.map((crop) => (
-              <div key={crop.id} className="flex items-center justify-between p-3 rounded-lg border border-border hover:bg-accent/50 transition-colors">
+              <div key={crop.id} className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-3 rounded-lg border border-border hover:bg-accent/50 transition-colors">
                 <div className="flex items-center gap-3 flex-1">
                   <Wheat className="w-5 h-5 text-muted-foreground" />
                   <div className="flex-1">
@@ -324,7 +324,7 @@ export default function CropManagementCard() {
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center gap-2">
+                <div className="flex flex-wrap items-center gap-2">
                   <Badge className={healthColors[crop.healthStatus as keyof typeof healthColors] || healthColors.Good}>
                     {crop.healthStatus}
                   </Badge>
