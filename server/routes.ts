@@ -1,38 +1,76 @@
 import type { Express } from "express";
 import { createServer, type Server } from "http";
+import { createHmac, timingSafeEqual } from "crypto";
+import { ZodError } from "zod";
 import { storage } from "./storage";
 import { registerSchema, loginSchema, insertUserSchema, insertOrderSchema, insertInventorySchema, insertCropSchema, insertEquipmentSchema, insertIrrigationSchema, insertSoilHealthSchema } from "@shared/schema";
-import { ZodError } from "zod";
-import jwt from "jsonwebtoken";
 
-const SESSION_SECRET = process.env.SESSION_SECRET || "dev-secret";
+const SESSION_TTL_MS = 1000 * 60 * 60 * 24 * 7; // 7 days
+const SESSION_SECRET =
+  process.env.SESSION_SECRET ||
+  process.env.DATABASE_URL ||
+  "farm-management-dev-session-secret";
+
 if (!process.env.SESSION_SECRET) {
-  console.warn("[AUTH] SESSION_SECRET not set; using insecure default.");
+  console.warn("[AUTH] SESSION_SECRET not set; using fallback secret. Set SESSION_SECRET in production.");
 }
 
-const createSessionToken = (userId: string) =>
-  jwt.sign({ sub: userId }, SESSION_SECRET, { expiresIn: "7d" });
+type SessionPayload = {
+  userId: string;
+  exp: number;
+};
 
-// JWT-backed session helpers (stateless, serverless-safe)
-const sessions = {
-  get(sessionId?: string) {
-    if (!sessionId) return undefined;
-    try {
-      const payload = jwt.verify(sessionId, SESSION_SECRET);
-      if (typeof payload === "string") return payload;
-      if (typeof payload?.sub === "string") return payload.sub;
-      const userId = (payload as { userId?: string }).userId;
-      return typeof userId === "string" ? userId : undefined;
-    } catch {
-      return undefined;
+const createSessionToken = (userId: string) => {
+  const payload: SessionPayload = {
+    userId,
+    exp: Date.now() + SESSION_TTL_MS,
+  };
+  const payloadEncoded = Buffer.from(JSON.stringify(payload), "utf8").toString("base64url");
+  const signature = createHmac("sha256", SESSION_SECRET)
+    .update(payloadEncoded)
+    .digest("base64url");
+
+  return `${payloadEncoded}.${signature}`;
+};
+
+const verifySessionToken = (token: string): string | null => {
+  try {
+    const [payloadEncoded, signature] = token.split(".");
+    if (!payloadEncoded || !signature) return null;
+
+    const expectedSignature = createHmac("sha256", SESSION_SECRET)
+      .update(payloadEncoded)
+      .digest("base64url");
+
+    const incomingSigBuffer = Buffer.from(signature, "utf8");
+    const expectedSigBuffer = Buffer.from(expectedSignature, "utf8");
+
+    if (
+      incomingSigBuffer.length !== expectedSigBuffer.length ||
+      !timingSafeEqual(incomingSigBuffer, expectedSigBuffer)
+    ) {
+      return null;
     }
-  },
-  set(_sessionId: string, _userId: string) {
-    // no-op for stateless JWT
-  },
-  delete(_sessionId: string) {
-    // no-op for stateless JWT
-  },
+
+    const payload = JSON.parse(
+      Buffer.from(payloadEncoded, "base64url").toString("utf8"),
+    ) as SessionPayload;
+
+    if (!payload?.userId || typeof payload.userId !== "string") return null;
+    if (!payload?.exp || typeof payload.exp !== "number") return null;
+    if (Date.now() > payload.exp) return null;
+
+    return payload.userId;
+  } catch {
+    return null;
+  }
+};
+
+// Session API kept to minimize route changes; token verification is stateless.
+const sessions = {
+  set: (_token: string, _userId: string) => undefined,
+  get: (token: string) => verifySessionToken(token) ?? undefined,
+  delete: (_token: string) => undefined,
 };
 
 export async function registerRoutes(app: Express): Promise<Server> {
@@ -89,7 +127,7 @@ export async function registerRoutes(app: Express): Promise<Server> {
       }
 
       // Create session
-      const sessionId = Math.random().toString(36).substring(7);
+      const sessionId = createSessionToken(user.id);
       sessions.set(sessionId, user.id);
       
       // Return user without password

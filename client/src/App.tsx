@@ -29,6 +29,7 @@ function App() {
   }, []);
 
   const handleLogin = (userData: any, newSessionId: string) => {
+    queryClient.clear();
     setUser(userData);
     setSessionId(newSessionId);
     localStorage.setItem("user", JSON.stringify(userData));
@@ -51,6 +52,7 @@ function App() {
     setSessionId(null);
     localStorage.removeItem("user");
     localStorage.removeItem("sessionId");
+    queryClient.clear();
   };
 
   const handleUserUpdate = (updatedUser: any) => {
