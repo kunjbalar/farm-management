@@ -85,26 +85,15 @@ export default function FarmerProfileSidebar({
   const handleSave = async () => {
     setLoading(true);
     try {
-      const sessionId = localStorage.getItem("sessionId");
-      const response = await fetch("/api/user", {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${sessionId}`,
-        },
-        body: JSON.stringify({
-          name: editName,
-          farmName: editFarmName,
-          farmLocation: editFarmLocation,
-          totalArea: editTotalArea,
-          contact: editContact,
-          profilePhoto: profilePhoto,
-        }),
+      const response = await apiRequest("PUT", "/api/user", {
+        name: editName,
+        farmName: editFarmName,
+        farmLocation: editFarmLocation,
+        totalArea: editTotalArea,
+        contact: editContact,
+        profilePhoto: profilePhoto,
       });
 
-      if (!response.ok) {
-        throw new Error("Failed to update profile");
-      }
 
       const updatedUser = await response.json();
       onUserUpdate(updatedUser);

@@ -21,12 +21,10 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
   const [farmName, setFarmName] = useState("");
   const [farmLocation, setFarmLocation] = useState("");
   const [contact, setContact] = useState("");
-  const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
 
     try {
@@ -38,7 +36,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
       const data = await response.json();
       onLogin(data.user, data.sessionId);
     } catch (err: any) {
-      setError(err.message || "Login failed");
+      console.error("[Login] Failed to sign in", err);
     } finally {
       setLoading(false);
     }
@@ -46,7 +44,6 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
 
   const handleRegister = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError("");
     setLoading(true);
 
     try {
@@ -62,7 +59,7 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
       const data = await response.json();
       onLogin(data.user, data.sessionId);
     } catch (err: any) {
-      setError(err.message || "Registration failed");
+      console.error("[Register] Failed to create account", err);
     } finally {
       setLoading(false);
     }
@@ -91,11 +88,6 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
             <TabsContent value="login">
               <form onSubmit={handleLogin}>
                 <div className="space-y-4">
-                  {error && (
-                    <div className="p-3 rounded-md bg-destructive/10 text-destructive text-sm" data-testid="text-error">
-                      {error}
-                    </div>
-                  )}
 
                   <div>
                     <Label htmlFor="email" className="text-foreground">Email Address</Label>
@@ -149,11 +141,6 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
             <TabsContent value="register">
               <form onSubmit={handleRegister}>
                 <div className="space-y-4">
-                  {error && (
-                    <div className="p-3 rounded-md bg-destructive/10 text-destructive text-sm" data-testid="text-error">
-                      {error}
-                    </div>
-                  )}
 
                   <div>
                     <Label htmlFor="register-email" className="text-foreground">Email Address</Label>

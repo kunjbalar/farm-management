@@ -6,6 +6,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { useQuery, useMutation, useQueryClient } from "@tanstack/react-query";
 import { Pencil, Save, X } from "lucide-react";
+import { apiRequest } from "@/lib/queryClient";
 import type { SoilHealth, InsertSoilHealth } from "@shared/schema";
 
 export default function SoilHealthWidget() {
@@ -42,20 +43,7 @@ export default function SoilHealthWidget() {
 
   const saveMutation = useMutation({
     mutationFn: async (data: InsertSoilHealth) => {
-      const response = await fetch("/api/soil-health", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${localStorage.getItem("sessionId")}`,
-        },
-        body: JSON.stringify(data),
-        credentials: "include",
-      });
-
-      if (!response.ok) {
-        throw new Error("Failed to save soil health data");
-      }
-
+      const response = await apiRequest("POST", "/api/soil-health", data);
       return response.json();
     },
     onSuccess: () => {

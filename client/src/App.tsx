@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Switch, Route } from "wouter";
-import { queryClient } from "./lib/queryClient";
+import { apiRequest, queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
 
 import { Toaster } from "@/components/ui/toaster";
@@ -40,12 +40,7 @@ function App() {
     const storedSessionId = localStorage.getItem("sessionId");
     if (storedSessionId) {
       try {
-        await fetch("/api/logout", {
-          method: "POST",
-          headers: {
-            "Authorization": `Bearer ${storedSessionId}`,
-          },
-        });
+        await apiRequest("POST", "/api/logout");
       } catch (err) {
         console.error("Logout error:", err);
       }
