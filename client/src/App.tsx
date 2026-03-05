@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { Switch, Route } from "wouter";
 import { queryClient } from "./lib/queryClient";
 import { QueryClientProvider } from "@tanstack/react-query";
+
 import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { ThemeProvider } from "@/components/theme-provider";
@@ -9,6 +10,7 @@ import LoginPage from "@/components/LoginPage";
 import DashboardPage from "@/pages/DashboardPage";
 import OrderHistoryPage from "@/pages/OrderHistoryPage";
 import NotFound from "@/pages/not-found";
+
 
 function App() {
   const [user, setUser] = useState<any>(null);
@@ -18,6 +20,7 @@ function App() {
     // Check for existing session in localStorage
     const storedUser = localStorage.getItem("user");
     const storedSessionId = localStorage.getItem("sessionId");
+
     
     if (storedUser && storedSessionId) {
       setUser(JSON.parse(storedUser));
