@@ -29,6 +29,15 @@ async function getErrorMessage(res: Response) {
     try {
       const data = JSON.parse(trimmed || "{}");
       if (typeof data === "string") return data;
+      if (Array.isArray(data?.details) && data.details.length > 0) {
+        const issue = data.details[0];
+        const path = Array.isArray(issue?.path) ? issue.path.join(".") : "";
+        const msg = issue?.message ? String(issue.message) : "Invalid input";
+        const detail = path ? `${msg} (${path})` : msg;
+        if (data?.error) return `${String(data.error)}: ${detail}`;
+        if (data?.message) return `${String(data.message)}: ${detail}`;
+        return detail;
+      }
       if (data?.error) return String(data.error);
       if (data?.message) return String(data.message);
     } catch {

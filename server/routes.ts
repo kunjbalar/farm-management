@@ -2,9 +2,38 @@ import type { Express } from "express";
 import { createServer, type Server } from "http";
 import { storage } from "./storage";
 import { registerSchema, loginSchema, insertUserSchema, insertOrderSchema, insertInventorySchema, insertCropSchema, insertEquipmentSchema, insertIrrigationSchema, insertSoilHealthSchema } from "@shared/schema";
+import { ZodError } from "zod";
+import jwt from "jsonwebtoken";
 
-// Simple in-memory session store
-const sessions = new Map<string, string>();
+const SESSION_SECRET = process.env.SESSION_SECRET || "dev-secret";
+if (!process.env.SESSION_SECRET) {
+  console.warn("[AUTH] SESSION_SECRET not set; using insecure default.");
+}
+
+const createSessionToken = (userId: string) =>
+  jwt.sign({ sub: userId }, SESSION_SECRET, { expiresIn: "7d" });
+
+// JWT-backed session helpers (stateless, serverless-safe)
+const sessions = {
+  get(sessionId?: string) {
+    if (!sessionId) return undefined;
+    try {
+      const payload = jwt.verify(sessionId, SESSION_SECRET);
+      if (typeof payload === "string") return payload;
+      if (typeof payload?.sub === "string") return payload.sub;
+      const userId = (payload as { userId?: string }).userId;
+      return typeof userId === "string" ? userId : undefined;
+    } catch {
+      return undefined;
+    }
+  },
+  set(_sessionId: string, _userId: string) {
+    // no-op for stateless JWT
+  },
+  delete(_sessionId: string) {
+    // no-op for stateless JWT
+  },
+};
 
 export async function registerRoutes(app: Express): Promise<Server> {
   // Register a new user
@@ -26,18 +55,26 @@ export async function registerRoutes(app: Express): Promise<Server> {
       console.log("[REGISTER] User created successfully:", user.id);
       
       // Create session
-      const sessionId = Math.random().toString(36).substring(7);
+      const sessionId = createSessionToken(user.id);
       sessions.set(sessionId, user.id);
       
       // Return user without password
       const { password, ...userWithoutPassword } = user;
       res.json({ user: userWithoutPassword, sessionId });
     } catch (error) {
-      console.error("[REGISTER] Validation error:", error);
+      if (error instanceof ZodError) {
+        console.error("[REGISTER] Validation error:", error.issues);
+        return res.status(400).json({
+          error: "Invalid registration data",
+          details: error.issues,
+        });
+      }
+
+      console.error("[REGISTER] Server error:", error);
       if (error instanceof Error) {
         console.error("[REGISTER] Error details:", error.message);
       }
-      res.status(400).json({ error: "Invalid registration data" });
+      return res.status(500).json({ error: "Failed to register user" });
     }
   });
 
@@ -59,7 +96,19 @@ export async function registerRoutes(app: Express): Promise<Server> {
       const { password, ...userWithoutPassword } = user;
       res.json({ user: userWithoutPassword, sessionId });
     } catch (error) {
-      res.status(400).json({ error: "Invalid login data" });
+      if (error instanceof ZodError) {
+        console.error("[LOGIN] Validation error:", error.issues);
+        return res.status(400).json({
+          error: "Invalid login data",
+          details: error.issues,
+        });
+      }
+
+      console.error("[LOGIN] Server error:", error);
+      if (error instanceof Error) {
+        console.error("[LOGIN] Error details:", error.message);
+      }
+      return res.status(500).json({ error: "Failed to login user" });
     }
   });
 
