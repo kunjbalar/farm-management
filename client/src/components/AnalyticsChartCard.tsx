@@ -13,16 +13,16 @@ export default function AnalyticsChartCard({ title, description, chartType, data
   const isEmpty = !data || data.length === 0;
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
-        <CardTitle className="text-lg">{title}</CardTitle>
+        <CardTitle>{title}</CardTitle>
         <p className="text-sm text-muted-foreground">{description}</p>
       </CardHeader>
       <CardContent>
-        <div className="h-64">
+        <div className="h-[220px] sm:h-64">
           {isEmpty ? (
             <div className="h-full flex items-center justify-center">
-              <div className="text-center">
+              <div className="rounded-xl border border-border/60 bg-muted/30 px-5 py-6 text-center">
                 <p className="text-muted-foreground text-sm">No data available</p>
                 <p className="text-muted-foreground text-xs mt-1">Add items to see analytics</p>
               </div>

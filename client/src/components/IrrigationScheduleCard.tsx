@@ -145,9 +145,9 @@ export default function IrrigationScheduleCard() {
   };
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
-        <CardTitle className="text-lg">Irrigation Schedule</CardTitle>
+        <CardTitle>Irrigation Schedule</CardTitle>
       </CardHeader>
       <CardContent>
         {isLoading ? (
@@ -157,7 +157,7 @@ export default function IrrigationScheduleCard() {
         ) : (
           <div className="space-y-3 mb-4">
             {irrigations.map((irrigation) => (
-              <div key={irrigation.id} className="p-3 rounded-lg border border-border">
+              <div key={irrigation.id} className="rounded-xl border border-border/60 bg-background/70 p-3">
                 <div className="flex flex-wrap items-center gap-2 mb-2">
                   <Droplets className="w-4 h-4 text-primary" />
                   <h4 className="font-semibold text-sm" data-testid={`text-field-${irrigation.id}`}>
@@ -209,7 +209,7 @@ export default function IrrigationScheduleCard() {
               Schedule New Irrigation
             </Button>
           </DialogTrigger>
-          <DialogContent>
+          <DialogContent className="max-w-xl">
             <DialogHeader>
               <DialogTitle>{editingIrrigation ? 'Edit Irrigation Schedule' : 'New Irrigation Schedule'}</DialogTitle>
             </DialogHeader>
@@ -260,7 +260,7 @@ export default function IrrigationScheduleCard() {
                   id="status"
                   value={formData.status}
                   onChange={(e) => setFormData({ ...formData, status: e.target.value })}
-                  className="flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm"
+                  className="flex h-10 w-full rounded-lg border border-input bg-background/90 px-3 py-2 text-sm shadow-sm"
                 >
                   <option value="Scheduled">Scheduled</option>
                   <option value="In Progress">In Progress</option>

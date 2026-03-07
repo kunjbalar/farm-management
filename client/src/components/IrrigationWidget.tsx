@@ -4,7 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Droplets, Calendar } from "lucide-react";
 import { useQuery } from "@tanstack/react-query";
 import type { Irrigation } from "@shared/schema";
-import { format, isToday, isTomorrow, isPast, isFuture } from "date-fns";
+import { format, isToday, isTomorrow } from "date-fns";
 
 interface IrrigationWidgetProps {
   onManageSchedule: () => void;
@@ -86,11 +86,13 @@ export default function IrrigationWidget({ onManageSchedule }: IrrigationWidgetP
   };
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
         <div className="flex flex-wrap items-center justify-between gap-2">
-          <CardTitle className="text-lg">Irrigation Schedule</CardTitle>
-          <Calendar className="w-5 h-5 text-muted-foreground" />
+          <CardTitle>Irrigation Schedule</CardTitle>
+          <div className="rounded-lg bg-primary/10 p-2">
+            <Calendar className="h-4 w-4 text-primary" />
+          </div>
         </div>
       </CardHeader>
       <CardContent>
@@ -121,7 +123,7 @@ export default function IrrigationWidget({ onManageSchedule }: IrrigationWidgetP
               {upcomingIrrigations.map((irrigation) => (
                 <div
                   key={irrigation.id}
-                  className="p-3 rounded-lg border border-border bg-card hover:bg-accent/50 transition-colors"
+                  className="rounded-xl border border-border/60 bg-background/70 p-3 transition-colors hover:bg-accent/40"
                 >
                   <div className="flex items-start gap-2">
                     <Droplets className="w-4 h-4 text-blue-500 mt-0.5" />
@@ -130,7 +132,7 @@ export default function IrrigationWidget({ onManageSchedule }: IrrigationWidgetP
                         <h4 className="font-semibold text-sm truncate">
                           {irrigation.fieldName}
                         </h4>
-                        <span className={`text-xs px-2 py-0.5 rounded-full ${getStatusColor(irrigation.status)}`}>
+                        <span className={`rounded-full px-2 py-0.5 text-xs ${getStatusColor(irrigation.status)}`}>
                           {irrigation.status}
                         </span>
                       </div>

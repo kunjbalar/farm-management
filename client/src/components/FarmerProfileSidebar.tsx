@@ -115,60 +115,66 @@ export default function FarmerProfileSidebar({
 
   return (
     <>
-      <div className="w-full flex-shrink-0 bg-sidebar border-b border-sidebar-border p-6 flex flex-col lg:w-64 lg:border-b-0 lg:border-r">
-        <h2 className="text-lg font-semibold text-sidebar-foreground mb-6">Farmer Profile</h2>
-        
-        <div className="flex flex-col items-center mb-6">
-          <div className="relative group">
-            <Avatar className="w-24 h-24 mb-4">
-              <AvatarImage src={user.profilePhoto || ""} />
-              <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
-                {farmerName.split(' ').map(n => n[0]).join('')}
-              </AvatarFallback>
-            </Avatar>
-          </div>
-          <h3 className="font-semibold text-sidebar-foreground text-center" data-testid="text-farmer-name">{farmerName}</h3>
-          <p className="text-sm text-muted-foreground"> Farm Owner</p>
+      <aside className="w-full flex-shrink-0 border-b border-sidebar-border/70 bg-sidebar/90 p-4 sm:p-6 lg:w-80 lg:border-b-0 lg:border-r lg:overflow-y-auto">
+        <div className="mb-6 flex items-center justify-between">
+          <h2 className="text-base font-semibold text-sidebar-foreground sm:text-lg">Farmer Profile</h2>
+          <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
+            Active
+          </span>
         </div>
 
-        <div className="space-y-4 flex-1">
-          <div>
-            <h4 className="text-sm font-medium text-sidebar-foreground mb-1">Farm Location</h4>
-            <p className="text-sm text-muted-foreground" data-testid="text-farm-location">{farmLocation}</p>
-          </div>
+        <div className="mb-6 flex flex-col items-center rounded-2xl border border-sidebar-border/70 bg-card/50 p-5 text-center">
+          <Avatar className="mb-4 h-24 w-24 ring-4 ring-primary/10">
+            <AvatarImage src={user.profilePhoto || ""} />
+            <AvatarFallback className="bg-primary text-2xl text-primary-foreground">
+              {farmerName.split(' ').map(n => n[0]).join('')}
+            </AvatarFallback>
+          </Avatar>
+          <h3 className="text-lg font-semibold text-sidebar-foreground" data-testid="text-farmer-name">{farmerName}</h3>
+          <p className="mt-1 text-sm text-muted-foreground">Farm Owner</p>
+          <p className="mt-2 max-w-[220px] truncate text-xs text-muted-foreground">{farmName}</p>
+        </div>
 
-          <div>
-            <h4 className="text-sm font-medium text-sidebar-foreground mb-1">Total Area</h4>
-            <p className="text-sm text-muted-foreground" data-testid="text-total-area">{totalArea}</p>
+        <div className="grid flex-1 grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-1">
+          <div className="rounded-xl border border-sidebar-border/60 bg-card/40 p-3">
+            <h4 className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">Farm Name</h4>
+            <p className="truncate text-sm text-sidebar-foreground">{farmName}</p>
           </div>
-
-          <div>
-            <h4 className="text-sm font-medium text-sidebar-foreground mb-1">Contact</h4>
-            <p className="text-sm text-muted-foreground" data-testid="text-contact">{contact}</p>
+          <div className="rounded-xl border border-sidebar-border/60 bg-card/40 p-3">
+            <h4 className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">Farm Location</h4>
+            <p className="truncate text-sm text-sidebar-foreground" data-testid="text-farm-location">{farmLocation}</p>
+          </div>
+          <div className="rounded-xl border border-sidebar-border/60 bg-card/40 p-3">
+            <h4 className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">Total Area</h4>
+            <p className="truncate text-sm text-sidebar-foreground" data-testid="text-total-area">{totalArea}</p>
+          </div>
+          <div className="rounded-xl border border-sidebar-border/60 bg-card/40 p-3">
+            <h4 className="mb-1 text-xs font-medium uppercase tracking-wide text-muted-foreground">Contact</h4>
+            <p className="truncate text-sm text-sidebar-foreground" data-testid="text-contact">{contact}</p>
           </div>
         </div>
 
-        <Button 
-          onClick={handleEditClick} 
-          className="w-full mt-6"
+        <Button
+          onClick={handleEditClick}
+          className="mt-6 w-full"
           data-testid="button-edit-profile"
         >
           Edit Profile
         </Button>
-      </div>
+      </aside>
 
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
-        <DialogContent data-testid="dialog-edit-profile">
+        <DialogContent className="max-w-2xl" data-testid="dialog-edit-profile">
           <DialogHeader>
             <DialogTitle>Edit Profile</DialogTitle>
           </DialogHeader>
-          
-          <div className="space-y-4 py-4">
+
+          <div className="space-y-4 py-1">
             <div className="flex flex-col items-center">
               <div className="relative">
-                <Avatar className="w-24 h-24">
+                <Avatar className="h-24 w-24">
                   <AvatarImage src={profilePhoto || ""} />
-                  <AvatarFallback className="bg-primary text-primary-foreground text-2xl">
+                  <AvatarFallback className="bg-primary text-2xl text-primary-foreground">
                     {editName.split(' ').map((n: string) => n[0]).join('')}
                   </AvatarFallback>
                 </Avatar>
@@ -176,7 +182,7 @@ export default function FarmerProfileSidebar({
                   type="button"
                   size="icon"
                   variant="secondary"
-                  className="absolute bottom-0 right-0 rounded-full h-8 w-8"
+                  className="absolute bottom-0 right-0 h-8 w-8 rounded-full"
                   onClick={() => fileInputRef.current?.click()}
                 >
                   <Camera className="h-4 w-4" />
@@ -189,76 +195,79 @@ export default function FarmerProfileSidebar({
                   onChange={handlePhotoChange}
                 />
               </div>
-              <p className="text-xs text-muted-foreground mt-2">Click camera to change photo</p>
-            </div>
-            <div>
-              <Label htmlFor="edit-name">Full Name</Label>
-              <div className="relative mt-1">
-                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  id="edit-name"
-                  value={editName}
-                  onChange={(e) => setEditName(e.target.value)}
-                  className="pl-10"
-                  data-testid="input-edit-name"
-                />
-              </div>
+              <p className="mt-2 text-xs text-muted-foreground">Click camera to change photo</p>
             </div>
 
-            <div>
-              <Label htmlFor="edit-farm-name">Farm Name</Label>
-              <div className="relative mt-1">
-                <Leaf className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  id="edit-farm-name"
-                  value={editFarmName}
-                  onChange={(e) => setEditFarmName(e.target.value)}
-                  className="pl-10"
-                  data-testid="input-edit-farm-name"
-                />
+            <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+              <div>
+                <Label htmlFor="edit-name">Full Name</Label>
+                <div className="relative mt-1">
+                  <User className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="edit-name"
+                    value={editName}
+                    onChange={(e) => setEditName(e.target.value)}
+                    className="pl-10"
+                    data-testid="input-edit-name"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div>
-              <Label htmlFor="edit-farm-location">Farm Location</Label>
-              <div className="relative mt-1">
-                <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  id="edit-farm-location"
-                  value={editFarmLocation}
-                  onChange={(e) => setEditFarmLocation(e.target.value)}
-                  className="pl-10"
-                  data-testid="input-edit-farm-location"
-                />
+              <div>
+                <Label htmlFor="edit-farm-name">Farm Name</Label>
+                <div className="relative mt-1">
+                  <Leaf className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="edit-farm-name"
+                    value={editFarmName}
+                    onChange={(e) => setEditFarmName(e.target.value)}
+                    className="pl-10"
+                    data-testid="input-edit-farm-name"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div>
-              <Label htmlFor="edit-total-area">Total Area</Label>
-              <div className="relative mt-1">
-                <Square className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  id="edit-total-area"
-                  value={editTotalArea}
-                  onChange={(e) => setEditTotalArea(e.target.value)}
-                  placeholder="e.g., 4 Hectare (10 acres)"
-                  className="pl-10"
-                  data-testid="input-edit-total-area"
-                />
+              <div>
+                <Label htmlFor="edit-farm-location">Farm Location</Label>
+                <div className="relative mt-1">
+                  <MapPin className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="edit-farm-location"
+                    value={editFarmLocation}
+                    onChange={(e) => setEditFarmLocation(e.target.value)}
+                    className="pl-10"
+                    data-testid="input-edit-farm-location"
+                  />
+                </div>
               </div>
-            </div>
 
-            <div>
-              <Label htmlFor="edit-contact">Contact</Label>
-              <div className="relative mt-1">
-                <Phone className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-muted-foreground" />
-                <Input
-                  id="edit-contact"
-                  value={editContact}
-                  onChange={(e) => setEditContact(e.target.value)}
-                  className="pl-10"
-                  data-testid="input-edit-contact"
-                />
+              <div>
+                <Label htmlFor="edit-total-area">Total Area</Label>
+                <div className="relative mt-1">
+                  <Square className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="edit-total-area"
+                    value={editTotalArea}
+                    onChange={(e) => setEditTotalArea(e.target.value)}
+                    placeholder="e.g., 4 Hectare (10 acres)"
+                    className="pl-10"
+                    data-testid="input-edit-total-area"
+                  />
+                </div>
+              </div>
+
+              <div className="sm:col-span-2">
+                <Label htmlFor="edit-contact">Contact</Label>
+                <div className="relative mt-1">
+                  <Phone className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+                  <Input
+                    id="edit-contact"
+                    value={editContact}
+                    onChange={(e) => setEditContact(e.target.value)}
+                    className="pl-10"
+                    data-testid="input-edit-contact"
+                  />
+                </div>
               </div>
             </div>
           </div>

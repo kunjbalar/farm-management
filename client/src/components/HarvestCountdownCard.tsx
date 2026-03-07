@@ -123,9 +123,9 @@ export default function HarvestCountdownCard() {
 
   return (
     <>
-      <Card>
+      <Card className="h-full">
         <CardHeader>
-          <CardTitle className="text-lg">Harvest Countdown</CardTitle>
+          <CardTitle>Harvest Countdown</CardTitle>
           <p className="text-sm text-muted-foreground">Track your crops until harvest</p>
         </CardHeader>
         <CardContent>
@@ -153,7 +153,7 @@ export default function HarvestCountdownCard() {
                   : '';
                 
                 return (
-                  <div key={crop.id}>
+                  <div key={crop.id} className="rounded-xl border border-border/60 bg-background/70 p-3">
                     <div className="flex flex-col gap-2 sm:flex-row sm:items-start sm:justify-between mb-2">
                       <div className="flex-1">
                         <div className="flex items-center gap-2">
@@ -206,7 +206,7 @@ export default function HarvestCountdownCard() {
 
       {/* Update Dialog */}
       <Dialog open={isUpdateDialogOpen} onOpenChange={setIsUpdateDialogOpen}>
-        <DialogContent>
+        <DialogContent className="max-w-xl">
           <DialogHeader>
             <DialogTitle>Update Crop Progress</DialogTitle>
           </DialogHeader>

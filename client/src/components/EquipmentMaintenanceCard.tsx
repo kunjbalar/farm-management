@@ -169,10 +169,10 @@ export default function EquipmentMaintenanceCard() {
   };
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">Equipment Maintenance</CardTitle>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <CardTitle>Equipment Maintenance</CardTitle>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button size="sm" onClick={() => { setEditingEquipment(null); setFormData(initialFormData); }}>
@@ -180,7 +180,7 @@ export default function EquipmentMaintenanceCard() {
                 Add Equipment
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>{editingEquipment ? 'Edit Equipment' : 'Add New Equipment'}</DialogTitle>
               </DialogHeader>
@@ -290,7 +290,7 @@ export default function EquipmentMaintenanceCard() {
         ) : (
           <div className="space-y-3">
             {equipment.map((equip) => (
-              <div key={equip.id} className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-3 rounded-lg border border-border hover:bg-accent/50 transition-colors">
+              <div key={equip.id} className="flex flex-col gap-3 rounded-xl border border-border/60 bg-background/70 p-3 transition-colors hover:bg-accent/40 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3 flex-1">
                   <Tractor className="w-5 h-5 text-muted-foreground" />
                   <div className="flex-1">

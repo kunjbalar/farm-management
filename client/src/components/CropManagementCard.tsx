@@ -171,10 +171,10 @@ export default function CropManagementCard() {
   };
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
-        <div className="flex items-center justify-between">
-          <CardTitle className="text-lg">Crop Management</CardTitle>
+        <div className="flex flex-wrap items-center justify-between gap-3">
+          <CardTitle>Crop Management</CardTitle>
           <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
             <DialogTrigger asChild>
               <Button size="sm" onClick={() => { setEditingCrop(null); setFormData(initialFormData); }}>
@@ -182,7 +182,7 @@ export default function CropManagementCard() {
                 Add Crop
               </Button>
             </DialogTrigger>
-            <DialogContent className="max-w-2xl max-h-[90vh] overflow-y-auto">
+            <DialogContent className="max-h-[90vh] max-w-2xl overflow-y-auto">
               <DialogHeader>
                 <DialogTitle>{editingCrop ? 'Edit Crop' : 'Add New Crop'}</DialogTitle>
               </DialogHeader>
@@ -305,7 +305,7 @@ export default function CropManagementCard() {
         ) : (
           <div className="space-y-3">
             {crops.map((crop) => (
-              <div key={crop.id} className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-3 rounded-lg border border-border hover:bg-accent/50 transition-colors">
+              <div key={crop.id} className="flex flex-col gap-3 rounded-xl border border-border/60 bg-background/70 p-3 transition-colors hover:bg-accent/40 sm:flex-row sm:items-center sm:justify-between">
                 <div className="flex items-center gap-3 flex-1">
                   <Wheat className="w-5 h-5 text-muted-foreground" />
                   <div className="flex-1">

@@ -43,9 +43,9 @@ export default function MachineryWidget({ onManageEquipment }: MachineryWidgetPr
   const activeEquipment = equipment.filter(e => e.status === 'Operational' || e.status === 'Maintenance');
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
-        <CardTitle className="text-lg">Machinery</CardTitle>
+        <CardTitle>Machinery</CardTitle>
         <p className="text-sm text-muted-foreground">Equipment status and tracking</p>
       </CardHeader>
       <CardContent>
@@ -71,7 +71,7 @@ export default function MachineryWidget({ onManageEquipment }: MachineryWidgetPr
                 const fuelPercent = parseFuelLevel(item.fuelLevel);
                 
                 return (
-                  <div key={item.id} className="flex flex-col gap-3 sm:flex-row sm:items-center sm:justify-between p-3 rounded-lg border border-border">
+                  <div key={item.id} className="flex flex-col gap-3 rounded-xl border border-border/60 bg-background/70 p-3 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex-1">
                       <div className="flex flex-wrap items-center gap-2 mb-1">
                         <h4 className="font-semibold text-sm" data-testid={`text-equipment-name-${index}`}>
@@ -96,7 +96,7 @@ export default function MachineryWidget({ onManageEquipment }: MachineryWidgetPr
                         {item.fuelLevel || 'N/A'}
                       </div>
                       {fuelPercent > 0 && (
-                        <div className="w-16 h-1.5 bg-gray-200 rounded-full mt-1 overflow-hidden">
+                        <div className="mt-1 h-1.5 w-16 overflow-hidden rounded-full bg-gray-200">
                           <div 
                             className={`h-full rounded-full ${
                               fuelPercent > 50 ? 'bg-green-500' : 

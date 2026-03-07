@@ -45,31 +45,41 @@ export default function OrderHistoryPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background p-6">
-      <div className="max-w-6xl mx-auto space-y-6">
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center">
-          <Button
-            variant="ghost"
-            size="icon"
-            onClick={() => setLocation("/")}
-            data-testid="button-back"
-          >
-            <ArrowLeft className="h-5 w-5" />
-          </Button>
-          <div>
-            <h1 className="text-3xl font-bold">Order History</h1>
-            <p className="text-muted-foreground">View all your supply orders</p>
+    <div className="min-h-screen py-6 sm:py-8">
+      <div className="app-container space-y-6">
+        <div className="surface-card flex flex-col gap-4 p-4 sm:flex-row sm:items-center sm:justify-between sm:p-5">
+          <div className="flex items-center gap-3">
+            <Button
+              variant="outline"
+              size="icon"
+              onClick={() => setLocation("/")}
+              data-testid="button-back"
+            >
+              <ArrowLeft className="h-5 w-5" />
+            </Button>
+            <div>
+              <h1 className="text-2xl font-semibold sm:text-3xl">Order History</h1>
+              <p className="text-sm text-muted-foreground sm:text-base">View all your supply orders</p>
+            </div>
           </div>
+          <Button
+            onClick={() => setLocation("/")}
+            variant="secondary"
+            size="sm"
+            data-testid="button-back-dashboard"
+          >
+            Back to Dashboard
+          </Button>
         </div>
 
         {isLoading ? (
-          <div className="flex items-center justify-center py-12">
+          <div className="surface-card flex items-center justify-center py-16">
             <p className="text-muted-foreground">Loading orders...</p>
           </div>
         ) : orders && orders.length > 0 ? (
-          <div className="grid gap-4">
+          <div className="grid gap-4 sm:gap-5">
             {orders.map((order) => (
-              <Card key={order.id} data-testid={`card-order-${order.id}`}>
+              <Card key={order.id} className="overflow-hidden" data-testid={`card-order-${order.id}`}>
                 <CardHeader>
                   <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
                     <div className="flex items-center gap-3 min-w-0">
@@ -88,7 +98,7 @@ export default function OrderHistoryPage() {
                     <Button
                       variant="ghost"
                       size="icon"
-                      className="text-destructive hover:text-destructive hover:bg-destructive/10"
+                      className="text-destructive hover:bg-destructive/10 hover:text-destructive"
                       onClick={() => handleDelete(order.id, order.orderId)}
                       data-testid={`button-delete-order-${order.id}`}
                     >
@@ -109,7 +119,7 @@ export default function OrderHistoryPage() {
           </div>
         ) : (
           <Card>
-            <CardContent className="flex flex-col items-center justify-center py-12">
+            <CardContent className="flex flex-col items-center justify-center py-16">
               <Package className="h-12 w-12 text-muted-foreground mb-4" />
               <h3 className="text-lg font-semibold mb-2">No orders yet</h3>
               <p className="text-muted-foreground text-center mb-4">

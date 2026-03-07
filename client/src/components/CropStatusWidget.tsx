@@ -50,9 +50,9 @@ export default function CropStatusWidget({ onManageAllCrops }: CropStatusWidgetP
   const activeCrops = crops.filter(crop => crop.status === 'Active');
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
-        <CardTitle className="text-lg">Crop Status</CardTitle>
+        <CardTitle>Crop Status</CardTitle>
         <p className="text-sm text-muted-foreground">Current crops and growth stages</p>
       </CardHeader>
       <CardContent>
@@ -80,7 +80,8 @@ export default function CropStatusWidget({ onManageAllCrops }: CropStatusWidgetP
                 );
                 
                 return (
-                  <div key={crop.id} className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+                  <div key={crop.id} className="rounded-xl border border-border/60 bg-background/70 p-3">
+                    <div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
                     <div className="flex-1">
                       <div className="flex flex-wrap items-center gap-2 mb-1">
                         <h4 className="font-semibold" data-testid={`text-crop-name-${index}`}>
@@ -103,12 +104,13 @@ export default function CropStatusWidget({ onManageAllCrops }: CropStatusWidgetP
                     <Button 
                       variant="ghost" 
                       size="sm" 
-                      className="text-primary" 
+                      className="text-primary sm:self-start" 
                       onClick={onManageAllCrops}
                       data-testid={`button-view-details-${index}`}
                     >
                       View Details
                     </Button>
+                  </div>
                   </div>
                 );
               })}

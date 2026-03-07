@@ -69,9 +69,9 @@ export default function WeatherWidget() {
 
   if (isLoading) {
     return (
-      <Card>
+      <Card className="h-full">
         <CardHeader>
-          <CardTitle className="text-lg">Weather</CardTitle>
+          <CardTitle>Weather</CardTitle>
           <p className="text-sm text-muted-foreground">Loading weather data...</p>
         </CardHeader>
         <CardContent>
@@ -82,17 +82,17 @@ export default function WeatherWidget() {
   }
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
-        <CardTitle className="text-lg">Weather</CardTitle>
+        <CardTitle>Weather</CardTitle>
         <p className="text-sm text-muted-foreground">
           {displayWeather.location ? `Current conditions at ${displayWeather.location}` : "Current conditions at your farm"}
         </p>
       </CardHeader>
       <CardContent>
-        <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between mb-6">
+        <div className="mb-6 flex flex-col gap-4 rounded-xl border border-border/60 bg-muted/30 p-4 sm:flex-row sm:items-center sm:justify-between">
           <div>
-            <div className="text-4xl font-bold" data-testid="text-temperature">{displayWeather.temperature}</div>
+            <div className="text-3xl font-semibold sm:text-4xl" data-testid="text-temperature">{displayWeather.temperature}</div>
             <div className="text-sm text-muted-foreground mt-1">{displayWeather.condition}</div>
           </div>
           <div className="w-20 h-20 flex items-center justify-center">
@@ -100,12 +100,12 @@ export default function WeatherWidget() {
           </div>
         </div>
 
-        <div className="grid grid-cols-2 gap-4 mb-4">
-          <div>
+        <div className="mb-4 grid grid-cols-2 gap-3">
+          <div className="rounded-lg border border-border/60 bg-background/70 p-3">
             <div className="text-sm text-muted-foreground">Humidity</div>
             <div className="text-base font-medium" data-testid="text-humidity">{displayWeather.humidity}</div>
           </div>
-          <div>
+          <div className="rounded-lg border border-border/60 bg-background/70 p-3">
             <div className="text-sm text-muted-foreground">Wind</div>
             <div className="text-base font-medium" data-testid="text-wind">{displayWeather.wind}</div>
           </div>
@@ -113,10 +113,10 @@ export default function WeatherWidget() {
 
         {displayWeather.forecast && displayWeather.forecast.length > 0 && (
           <div className="border-t border-border pt-4">
-            <div className="text-sm font-medium mb-2">Forecast</div>
-            <div className="flex flex-wrap gap-4 sm:flex-nowrap sm:justify-between">
+            <div className="mb-2 text-sm font-medium">Forecast</div>
+            <div className="grid grid-cols-2 gap-2 sm:grid-cols-3 lg:grid-cols-5">
               {displayWeather.forecast.map((item, index) => (
-                <div key={index} className="text-center">
+                <div key={index} className="rounded-lg border border-border/60 bg-background/70 p-2 text-center">
                   <div className="text-xs text-muted-foreground mb-1">{item.time}</div>
                   <div className="text-sm font-medium">{item.temp}</div>
                 </div>

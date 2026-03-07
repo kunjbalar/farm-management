@@ -40,9 +40,9 @@ export default function AlertsWidget({ alerts, onViewAllAlerts }: AlertsWidgetPr
   };
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
-        <CardTitle className="text-lg">Alerts</CardTitle>
+        <CardTitle>Alerts</CardTitle>
         <p className="text-sm text-muted-foreground">Critical notifications and warnings</p>
       </CardHeader>
       <CardContent>
@@ -50,7 +50,7 @@ export default function AlertsWidget({ alerts, onViewAllAlerts }: AlertsWidgetPr
           {alerts.map((alert, index) => (
             <div 
               key={index} 
-              className={`flex items-start gap-3 p-3 rounded-lg ${getAlertBg(alert.type)}`}
+              className={`flex items-start gap-3 rounded-xl border border-border/60 p-3 ${getAlertBg(alert.type)}`}
               data-testid={`alert-${index}`}
             >
               {getAlertIcon(alert.type)}

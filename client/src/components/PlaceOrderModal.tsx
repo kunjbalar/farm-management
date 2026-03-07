@@ -91,14 +91,14 @@ export default function PlaceOrderModal({ open, onOpenChange }: PlaceOrderModalP
 
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
-      <DialogContent className="sm:max-w-[500px]" data-testid="dialog-place-order">
+      <DialogContent className="sm:max-w-[560px]" data-testid="dialog-place-order">
         <DialogHeader>
           <DialogTitle>Place a New Supply Order</DialogTitle>
           <DialogDescription>
             Enter the details of the farm supplies you need to order.
           </DialogDescription>
         </DialogHeader>
-        <div className="space-y-4 py-4">
+        <div className="space-y-4 py-2">
           <div className="space-y-2">
             <Label htmlFor="item-name">Item Name</Label>
             <Input
@@ -136,7 +136,7 @@ export default function PlaceOrderModal({ open, onOpenChange }: PlaceOrderModalP
             </Select>
           </div>
         </div>
-        <DialogFooter>
+        <DialogFooter className="pt-1">
           <Button
             variant="outline"
             onClick={() => onOpenChange(false)}

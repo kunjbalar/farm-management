@@ -58,15 +58,15 @@ export default function InventoryWidget({ items, onOrder, onManageInventory }: I
   };
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
-        <CardTitle className="text-lg">Inventory</CardTitle>
+        <CardTitle>Inventory</CardTitle>
         <p className="text-sm text-muted-foreground">Farm supplies and stock status</p>
       </CardHeader>
       <CardContent>
         <div className="space-y-3">
           {items.map((item, index) => (
-            <div key={index} className="flex flex-wrap items-center justify-between gap-2 sm:flex-nowrap">
+            <div key={index} className="flex flex-wrap items-center justify-between gap-2 rounded-xl border border-border/60 bg-background/70 p-3 sm:flex-nowrap">
               <div className="flex-1 min-w-0">
                 <h4 className="font-medium text-sm" data-testid={`text-inventory-name-${index}`}>{item.name}</h4>
                 <p className="text-xs text-muted-foreground">{item.quantity}</p>

@@ -83,9 +83,9 @@ export default function SoilHealthWidget() {
 
   if (isLoading) {
     return (
-      <Card>
+      <Card className="h-full">
         <CardHeader>
-          <CardTitle className="text-lg">Soil Health</CardTitle>
+          <CardTitle>Soil Health</CardTitle>
           <p className="text-sm text-muted-foreground">Readiness and monitoring</p>
         </CardHeader>
         <CardContent>
@@ -96,11 +96,11 @@ export default function SoilHealthWidget() {
   }
 
   return (
-    <Card>
+    <Card className="h-full">
       <CardHeader>
         <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
           <div>
-            <CardTitle className="text-lg">Soil Health</CardTitle>
+            <CardTitle>Soil Health</CardTitle>
             <p className="text-sm text-muted-foreground">Readiness and monitoring</p>
           </div>
           {!isEditing ? (
@@ -139,7 +139,7 @@ export default function SoilHealthWidget() {
         </div>
       </CardHeader>
       <CardContent>
-        <div className="space-y-4">
+        <div className="space-y-4 rounded-xl border border-border/60 bg-muted/20 p-4">
           {/* Moisture */}
           <div>
             <div className="flex justify-between mb-2 items-center">
@@ -155,7 +155,7 @@ export default function SoilHealthWidget() {
                   step="0.1"
                   value={formData.moisture}
                   onChange={(e) => setFormData({ ...formData, moisture: e.target.value })}
-                  className="w-20 h-7 text-sm"
+                  className="h-8 w-24 text-sm"
                   placeholder="%"
                   data-testid="input-moisture"
                 />

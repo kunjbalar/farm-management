@@ -30,7 +30,7 @@ interface DashboardPageProps {
 export default function DashboardPage({ user, onLogout, onUserUpdate }: DashboardPageProps) {
   const [activeTab, setActiveTab] = useState<Tab>('overview');
   const [isOrderModalOpen, setIsOrderModalOpen] = useState(false);
-  const [, setLocation] = useLocation();
+  const [,setLocation] = useLocation();
   const { theme, setTheme } = useTheme();
 
   const { data: inventoryItems = [], isLoading: isLoadingInventory } = useQuery<Inventory[]>({
@@ -123,7 +123,7 @@ export default function DashboardPage({ user, onLogout, onUserUpdate }: Dashboar
   }, [weatherData]);
 
   return (
-    <div className="flex min-h-screen flex-col bg-background lg:h-screen lg:flex-row">
+    <div className="min-h-screen bg-transparent lg:flex">
       <FarmerProfileSidebar
         farmerName={user.name || "Farmer"}
         farmName={user.farmName || "Not Set"}
@@ -135,80 +135,89 @@ export default function DashboardPage({ user, onLogout, onUserUpdate }: Dashboar
         onUserUpdate={onUserUpdate}
       />
 
-      <div className="flex-1 flex min-w-0 flex-col overflow-hidden">
-        <header className="bg-primary border-b border-primary-border px-6 py-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
-          <div className="flex items-center gap-3">
-            <Leaf className="w-6 h-6 text-primary-foreground" />
-            <h1 className="text-xl font-bold text-primary-foreground">Farm Management</h1>
-          </div>
-          <div className="flex flex-wrap items-center gap-3 sm:gap-4">
-            <span className="text-sm text-primary-foreground">Welcome</span>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-              className="text-primary-foreground hover:bg-primary-foreground/10"
-              data-testid="button-theme-toggle"
-            >
-              {theme === "light" ? (
-                <Moon className="h-5 w-5" />
-              ) : (
-                <Sun className="h-5 w-5" />
-              )}
-              <span className="sr-only">Toggle theme</span>
-            </Button>
-            <Button 
-              variant="secondary" 
-              size="sm" 
-              onClick={onLogout}
-              data-testid="button-logout"
-            >
-              Logout
-            </Button>
+      <div className="flex min-w-0 flex-1 flex-col">
+        <header className="sticky top-0 z-20 border-b border-border/70 bg-background/90 backdrop-blur-md">
+          <div className="app-container py-4">
+            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
+              <div className="flex min-w-0 items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+                  <Leaf className="h-5 w-5" />
+                </div>
+                <div className="min-w-0">
+                  <h1 className="truncate text-xl font-semibold sm:text-2xl">Farm Management</h1>
+                  <p className="truncate text-sm text-muted-foreground">
+                    Welcome, {user.name || "Farmer"}
+                  </p>
+                </div>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+                  data-testid="button-theme-toggle"
+                >
+                  {theme === "light" ? (
+                    <Moon className="h-5 w-5" />
+                  ) : (
+                    <Sun className="h-5 w-5" />
+                  )}
+                  <span className="sr-only">Toggle theme</span>
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={onLogout}
+                  data-testid="button-logout"
+                >
+                  Logout
+                </Button>
+              </div>
+            </div>
+            <div className="mt-4 overflow-x-auto pb-1">
+              <div className="inline-flex min-w-full gap-2 sm:min-w-0">
+                <button
+                  onClick={() => setActiveTab('overview')}
+                  className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                    activeTab === 'overview'
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'bg-secondary/70 text-secondary-foreground hover:bg-secondary'
+                  }`}
+                  data-testid="tab-overview"
+                >
+                  Overview
+                </button>
+                <button
+                  onClick={() => setActiveTab('analytics')}
+                  className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                    activeTab === 'analytics'
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'bg-secondary/70 text-secondary-foreground hover:bg-secondary'
+                  }`}
+                  data-testid="tab-analytics"
+                >
+                  Analytics
+                </button>
+                <button
+                  onClick={() => setActiveTab('management')}
+                  className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
+                    activeTab === 'management'
+                      ? 'bg-primary text-primary-foreground shadow-sm'
+                      : 'bg-secondary/70 text-secondary-foreground hover:bg-secondary'
+                  }`}
+                  data-testid="tab-management"
+                >
+                  Management
+                </button>
+              </div>
+            </div>
           </div>
         </header>
 
-        <div className="bg-background border-b border-border px-6">
-          <div className="flex flex-wrap gap-6">
-            <button
-              onClick={() => setActiveTab('overview')}
-              className={`py-3 px-1 border-b-2 transition-colors ${
-                activeTab === 'overview'
-                  ? 'border-primary text-foreground font-medium'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'
-              }`}
-              data-testid="tab-overview"
-            >
-              Overview
-            </button>
-            <button
-              onClick={() => setActiveTab('analytics')}
-              className={`py-3 px-1 border-b-2 transition-colors ${
-                activeTab === 'analytics'
-                  ? 'border-primary text-foreground font-medium'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'
-              }`}
-              data-testid="tab-analytics"
-            >
-              Analytics
-            </button>
-            <button
-              onClick={() => setActiveTab('management')}
-              className={`py-3 px-1 border-b-2 transition-colors ${
-                activeTab === 'management'
-                  ? 'border-primary text-foreground font-medium'
-                  : 'border-transparent text-muted-foreground hover:text-foreground'
-              }`}
-              data-testid="tab-management"
-            >
-              Management
-            </button>
-          </div>
-        </div>
-
-        <main className="flex-1 overflow-auto p-6">
+        <main className="flex-1 py-4 sm:py-6">
+          <div className="app-container">
           {activeTab === 'overview' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <div className="section-grid grid-cols-1 md:grid-cols-2 2xl:grid-cols-3">
               <WeatherWidget />
               <SoilHealthWidget />
               <CropStatusWidget
@@ -234,7 +243,7 @@ export default function DashboardPage({ user, onLogout, onUserUpdate }: Dashboar
           )}
 
           {activeTab === 'analytics' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="section-grid grid-cols-1 xl:grid-cols-2">
               <AnalyticsChartCard
                 title="Crop Yield Projections"
                 description="Expected harvest outcomes based on current crops"
@@ -263,17 +272,17 @@ export default function DashboardPage({ user, onLogout, onUserUpdate }: Dashboar
           )}
 
           {activeTab === 'management' && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <div className="section-grid grid-cols-1 xl:grid-cols-2">
               <CropManagementCard />
               <EquipmentMaintenanceCard />
               <IrrigationScheduleCard />
               <HarvestCountdownCard />
             </div>
           )}
+          </div>
         </main>
-
-        <footer className="bg-background border-t border-border px-6 py-3">
-          <div className="flex flex-col gap-2 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
+        <footer className="border-t border-border/70 bg-background/80 py-3">
+          <div className="app-container flex flex-col gap-2 text-xs text-muted-foreground sm:flex-row sm:items-center sm:justify-between">
             <p>© 2025 Farm Management. All rights reserved.</p>
             <p>All systems operational | AWS ✓ | Last Sync: Just now</p>
           </div>
