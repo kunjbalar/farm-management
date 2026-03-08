@@ -67,8 +67,8 @@ export default function LoginPage({ onLogin }: LoginPageProps) {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-background via-background to-accent/20">
-      <div className="mx-auto grid min-h-screen w-full max-w-7xl grid-cols-1 lg:grid-cols-2">
+    <div className="min-h-screen">
+      <div className="grid min-h-screen w-full grid-cols-1 lg:grid-cols-2">
         <div className="flex items-center justify-center px-4 py-8 sm:px-6 lg:px-10">
           <div className="w-full max-w-md space-y-6">
             <div className="flex items-center gap-3">

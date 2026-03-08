@@ -90,6 +90,10 @@
   --shadow-2xl: 0px 25px 50px -12px hsl(0 0% 0% / 0.25);
   --tracking-normal: 0em;
   --spacing: 0.25rem;
+  --app-shell-gradient:
+    radial-gradient(120% 120% at 0% 0%, hsl(var(--primary) / 0.08) 0%, transparent 42%),
+    radial-gradient(130% 130% at 100% 0%, hsl(var(--chart-3) / 0.07) 0%, transparent 48%),
+    linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--background)) 100%);
 
   /* Automatically computed borders - intensity can be controlled by the user by the --opaque-button-border-intensity setting */
 
@@ -202,6 +206,10 @@
   --shadow-lg: 0px 10px 15px -3px hsl(0 0% 0% / 0.4), 0px 4px 6px -4px hsl(0 0% 0% / 0.4);
   --shadow-xl: 0px 20px 25px -5px hsl(0 0% 0% / 0.5), 0px 8px 10px -6px hsl(0 0% 0% / 0.5);
   --shadow-2xl: 0px 25px 50px -12px hsl(0 0% 0% / 0.6);
+  --app-shell-gradient:
+    radial-gradient(130% 130% at 0% 0%, hsl(var(--primary) / 0.14) 0%, transparent 45%),
+    radial-gradient(140% 140% at 100% 100%, hsl(var(--accent) / 0.24) 0%, transparent 58%),
+    linear-gradient(180deg, hsl(var(--background)) 0%, hsl(var(--background)) 100%);
 
 }
 
@@ -211,7 +219,11 @@
   }
 
   body {
-    @apply min-h-screen font-sans antialiased bg-gradient-to-b from-background via-background to-accent/30 text-foreground leading-relaxed;
+    @apply min-h-screen bg-background font-sans antialiased text-foreground leading-relaxed;
+    background-image: var(--app-shell-gradient);
+    background-repeat: no-repeat;
+    background-size: cover;
+    background-attachment: fixed;
   }
 
   #root {
