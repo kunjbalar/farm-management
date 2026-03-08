@@ -137,7 +137,7 @@ export default function DashboardPage({ user, onLogout, onUserUpdate }: Dashboar
 
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-20 border-b border-border/70 bg-background/90 backdrop-blur-md">
-          <div className="app-container py-4">
+          <div className="app-container py-1 sm:py-4 ">
             
             <div className="flex justify-between overflow-x-auto my-1">
               <div className="inline-flex min-w-full gap-2 sm:min-w-0">
@@ -175,7 +175,7 @@ export default function DashboardPage({ user, onLogout, onUserUpdate }: Dashboar
                   Management
                 </button>
               </div>
-              <div className="flex flex-wrap items-center gap-2">
+              <div className="flex sm:flex-wrap items-center gap-2">
                 <Button
                   variant="outline"
                   size="icon"
