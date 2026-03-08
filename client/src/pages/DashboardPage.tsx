@@ -138,43 +138,8 @@ export default function DashboardPage({ user, onLogout, onUserUpdate }: Dashboar
       <div className="flex min-w-0 flex-1 flex-col">
         <header className="sticky top-0 z-20 border-b border-border/70 bg-background/90 backdrop-blur-md">
           <div className="app-container py-4">
-            <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-              <div className="flex min-w-0 items-center gap-3">
-                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
-                  <Leaf className="h-5 w-5" />
-                </div>
-                <div className="min-w-0">
-                  <h1 className="truncate text-xl font-semibold sm:text-2xl">Farm Management</h1>
-                  <p className="truncate text-sm text-muted-foreground">
-                    Welcome, {user.name || "Farmer"}
-                  </p>
-                </div>
-              </div>
-              <div className="flex flex-wrap items-center gap-2">
-                <Button
-                  variant="outline"
-                  size="icon"
-                  onClick={() => setTheme(theme === "light" ? "dark" : "light")}
-                  data-testid="button-theme-toggle"
-                >
-                  {theme === "light" ? (
-                    <Moon className="h-5 w-5" />
-                  ) : (
-                    <Sun className="h-5 w-5" />
-                  )}
-                  <span className="sr-only">Toggle theme</span>
-                </Button>
-                <Button
-                  variant="secondary"
-                  size="sm"
-                  onClick={onLogout}
-                  data-testid="button-logout"
-                >
-                  Logout
-                </Button>
-              </div>
-            </div>
-            <div className="mt-4 overflow-x-auto pb-1">
+            
+            <div className="flex justify-between overflow-x-auto my-1">
               <div className="inline-flex min-w-full gap-2 sm:min-w-0">
                 <button
                   onClick={() => setActiveTab('overview')}
@@ -209,6 +174,29 @@ export default function DashboardPage({ user, onLogout, onUserUpdate }: Dashboar
                 >
                   Management
                 </button>
+              </div>
+              <div className="flex flex-wrap items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="icon"
+                  onClick={() => setTheme(theme === "light" ? "dark" : "light")}
+                  data-testid="button-theme-toggle"
+                >
+                  {theme === "light" ? (
+                    <Moon className="h-5 w-5" />
+                  ) : (
+                    <Sun className="h-5 w-5" />
+                  )}
+                  <span className="sr-only">Toggle theme</span>
+                </Button>
+                <Button
+                  variant="secondary"
+                  size="sm"
+                  onClick={onLogout}
+                  data-testid="button-logout"
+                >
+                  Logout
+                </Button>
               </div>
             </div>
           </div>

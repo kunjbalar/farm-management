@@ -115,13 +115,22 @@ export default function FarmerProfileSidebar({
 
   return (
     <>
-      <aside className="w-full flex-shrink-0 border-b border-sidebar-border/70 bg-sidebar/90 p-4 sm:p-6 lg:w-80 lg:border-b-0 lg:border-r lg:overflow-y-auto">
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-base font-semibold text-sidebar-foreground sm:text-lg">Farmer Profile</h2>
-          <span className="rounded-full bg-primary/10 px-3 py-1 text-xs font-medium text-primary">
-            Active
-          </span>
-        </div>
+      <aside className="w-full flex-shrink-0 border-b border-sidebar-border/70 bg-sidebar/90 p-4 sm:p-2 lg:w-80 lg:border-b-0 lg:border-r lg:overflow-y-auto">
+       
+        
+
+           <div className="flex my-3 mx-1 min-w-0 items-center gap-3">
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-sm">
+                  <Leaf className="h-5 w-5" />
+                </div>
+                <div className="min-w-0">
+                  <h1 className="truncate text-xl font-semibold sm:text-2xl">Farm Management</h1>
+                  <p className="truncate text-sm text-muted-foreground">
+                    Welcome, {user.name || "Farmer"}
+                  </p>
+                </div>
+          </div>
+         
 
         <div className="mb-6 flex flex-col items-center rounded-2xl border border-sidebar-border/70 bg-card/50 p-5 text-center">
           <Avatar className="mb-4 h-24 w-24 ring-4 ring-primary/10">
