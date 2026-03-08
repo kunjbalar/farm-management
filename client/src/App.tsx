@@ -62,7 +62,7 @@ function App() {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ThemeProvider defaultTheme="light" storageKey="farm-management-theme">
+      <ThemeProvider defaultTheme="dark" storageKey="farm-management-theme">
         <TooltipProvider>
           <Toaster />
           {!user ? (
